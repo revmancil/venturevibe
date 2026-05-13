@@ -1,0 +1,6 @@
+# Local environment — copy .env.example and fill in values
+idea_validator/nextjs_space/.env
+
+# Agent outputs may embed pasted secrets or full .env dumps
+shared/task_summaries/
+shared/task_run_transcripts/
