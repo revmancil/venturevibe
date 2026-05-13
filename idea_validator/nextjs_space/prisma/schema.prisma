@@ -2,9 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
-    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
-    output = "/home/ubuntu/idea_validator/nextjs_space/node_modules/.prisma/client"
+  provider = "prisma-client-js"
+  // Vercel uses RHEL-based Linux (OpenSSL 3). Keep extra targets if you deploy elsewhere.
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
 }
 
 datasource db {
