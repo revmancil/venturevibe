@@ -22,6 +22,7 @@ function generatePitchDeckHTML(deck: any): string {
     traction: { bg: '#0891B2', accent: '#67E8F9' },
     financials: { bg: '#4338CA', accent: '#A5B4FC' },
     ask: { bg: '#BE185D', accent: '#F9A8D4' },
+    custom: { bg: '#4B5563', accent: '#9CA3AF' },
   };
 
   const slidesHTML = slides.map((slide: any) => {
