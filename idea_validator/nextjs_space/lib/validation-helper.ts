@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getLlmApiKey, getLlmChatCompletionsUrl, getLlmModel } from "@/lib/llm-config";
 
 export interface ValidationHandlerOptions {
   fieldName: string;
@@ -29,14 +30,25 @@ export async function handleValidationRequest(
     return NextResponse.json({ error: "Idea not found or unauthorized" }, { status: 404 });
   }
 
-  const response = await fetch('https://apps.abacus.ai/v1/chat/completions', {
+  const apiKey = getLlmApiKey();
+  if (!apiKey) {
+    return NextResponse.json(
+      {
+        error: "LLM not configured",
+        hint: "Set AI_API_KEY (recommended) or ABACUSAI_API_KEY. For OpenAI use AI_API_BASE_URL=https://api.openai.com/v1 and AI_MODEL=gpt-4o-mini.",
+      },
+      { status: 503 }
+    );
+  }
+
+  const response = await fetch(getLlmChatCompletionsUrl(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.ABACUSAI_API_KEY}`,
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-5.4-mini',
+      model: getLlmModel(),
       messages: [{ role: 'user', content: options.prompt }],
       stream: true,
       max_tokens: options.maxTokens || 3000,

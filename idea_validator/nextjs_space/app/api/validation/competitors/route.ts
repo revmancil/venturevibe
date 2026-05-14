@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getLlmApiKey, getLlmChatCompletionsUrl, getLlmModel } from "@/lib/llm-config";
 
 export const dynamic = "force-dynamic";
 
@@ -61,14 +62,25 @@ Identify 3-4 key competitors and provide analysis in this JSON format:
 
 Respond with ONLY valid JSON, no additional text.`;
 
-    const response = await fetch('https://apps.abacus.ai/v1/chat/completions', {
+    const apiKey = getLlmApiKey();
+    if (!apiKey) {
+      return NextResponse.json(
+        {
+          error: "LLM not configured",
+          hint: "Set AI_API_KEY or ABACUSAI_API_KEY; optional AI_API_BASE_URL for OpenAI-compatible providers.",
+        },
+        { status: 503 }
+      );
+    }
+
+    const response = await fetch(getLlmChatCompletionsUrl(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.ABACUSAI_API_KEY}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-5.4-mini',
+        model: getLlmModel(),
         messages: [
           {
             role: 'user',

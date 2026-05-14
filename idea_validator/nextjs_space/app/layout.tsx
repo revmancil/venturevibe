@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
+import { getFallbackSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXTAUTH_URL || "https://mc3-idea-validator.abacusai.app";
+const siteUrl = process.env.NEXTAUTH_URL || getFallbackSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -167,7 +168,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable}`}>
       <head>
-        <script src="https://apps.abacus.ai/chatllm/appllm-lib.js"></script>
+        {process.env.ABACUS_APPLLM_SCRIPT === "true" ? (
+          <script async src="https://apps.abacus.ai/chatllm/appllm-lib.js" />
+        ) : null}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

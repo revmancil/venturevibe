@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isPdfExportEnabled } from "@/lib/pdf-export";
+import { getAbacusDeploymentToken } from "@/lib/llm-config";
 
 export const dynamic = "force-dynamic";
 
@@ -388,6 +390,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!isPdfExportEnabled()) {
+      return NextResponse.json(
+        {
+          error: "PDF export is disabled",
+          hint: "PDF_EXPORT=off. Unset PDF_EXPORT or use another value to enable Abacus HTML→PDF (needs ABACUSAI_API_KEY or ABACUS_DEPLOYMENT_TOKEN).",
+        },
+        { status: 503 }
+      );
+    }
+
+    const deploymentToken = getAbacusDeploymentToken();
+    if (!deploymentToken) {
+      return NextResponse.json(
+        {
+          error: "PDF export is not configured",
+          hint: "Set ABACUSAI_API_KEY or ABACUS_DEPLOYMENT_TOKEN for Abacus HTML→PDF, or set PDF_EXPORT=off to hide this feature.",
+        },
+        { status: 503 }
+      );
+    }
+
     const { ideaId } = await request.json();
     if (!ideaId) return NextResponse.json({ error: "Missing ideaId" }, { status: 400 });
 
@@ -407,7 +430,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        deployment_token: process.env.ABACUSAI_API_KEY,
+        deployment_token: deploymentToken,
         html_content: html,
         pdf_options: {
           format: 'A4',
@@ -434,7 +457,7 @@ export async function POST(request: NextRequest) {
       const statusRes = await fetch('https://apps.abacus.ai/api/getConvertHtmlToPdfStatus', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ request_id, deployment_token: process.env.ABACUSAI_API_KEY }),
+        body: JSON.stringify({ request_id, deployment_token: deploymentToken }),
       });
       const statusResult = await statusRes.json();
       if (statusResult?.status === 'SUCCESS' && statusResult?.result?.result) {

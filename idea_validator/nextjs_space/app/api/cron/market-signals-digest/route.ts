@@ -2,6 +2,71 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAbacusDeploymentToken } from '@/lib/llm-config';
+import { getFallbackSiteUrl } from '@/lib/site-url';
+
+async function sendDigestEmail(params: {
+  useResend: boolean;
+  useAbacusEmail: boolean;
+  userEmail: string;
+  subject: string;
+  htmlBody: string;
+  appUrl: string;
+  appName: string;
+  abacusToken: string | undefined;
+}): Promise<boolean> {
+  const { useResend, useAbacusEmail, userEmail, subject, htmlBody, appUrl, appName, abacusToken } = params;
+
+  if (useResend) {
+    const resendRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: process.env.RESEND_FROM,
+        to: [userEmail],
+        subject,
+        html: htmlBody,
+      }),
+    });
+    const resendJson = await resendRes.json().catch(() => ({}));
+    if (!resendRes.ok || resendJson.error) {
+      console.error('Resend digest error', resendJson);
+      return false;
+    }
+    return true;
+  }
+
+  if (useAbacusEmail && abacusToken) {
+    const emailRes = await fetch('https://apps.abacus.ai/api/sendNotificationEmail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        deployment_token: abacusToken,
+        app_id: process.env.WEB_APP_ID,
+        notification_id: process.env.NOTIF_ID_WEEKLY_MARKET_SIGNALS_DIGEST,
+        subject,
+        body: htmlBody,
+        is_html: true,
+        recipient_email: userEmail,
+        sender_email: `noreply@${(() => {
+          try {
+            return new URL(appUrl).hostname;
+          } catch {
+            return 'localhost';
+          }
+        })()}`,
+        sender_alias: appName,
+      }),
+    });
+    const result = await emailRes.json();
+    return !!(result.success || result.notification_disabled);
+  }
+
+  return false;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +85,14 @@ export async function POST(request: NextRequest) {
     if (reports.length === 0) {
       return NextResponse.json({ message: 'No ideas with market signals', sent: 0 });
     }
+
+    const useResend = !!(process.env.RESEND_API_KEY?.trim() && process.env.RESEND_FROM?.trim());
+    const abacusToken = getAbacusDeploymentToken();
+    const useAbacusEmail = !!(
+      abacusToken &&
+      process.env.WEB_APP_ID?.trim() &&
+      process.env.NOTIF_ID_WEEKLY_MARKET_SIGNALS_DIGEST?.trim()
+    );
 
     // Group by user
     const userIdeas: Record<string, { email: string; name: string; ideas: Array<{ title: string; trendScore: number; overallTrend: string; summary: string }> }> = {};
@@ -41,8 +114,20 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const digestUserCount = Object.keys(userIdeas).length;
+    if (digestUserCount > 0 && !useResend && !useAbacusEmail) {
+      return NextResponse.json(
+        {
+          error: 'Digest email not configured',
+          hint:
+            'Set RESEND_API_KEY + RESEND_FROM (recommended for self-hosted), or Abacus ABACUSAI_API_KEY + WEB_APP_ID + NOTIF_ID_WEEKLY_MARKET_SIGNALS_DIGEST.',
+        },
+        { status: 503 }
+      );
+    }
+
     let sent = 0;
-    const appUrl = process.env.NEXTAUTH_URL || '';
+    const appUrl = process.env.NEXTAUTH_URL || getFallbackSiteUrl();
     const appName = appUrl ? new URL(appUrl).hostname.split('.')[0] : 'VentureVibe';
 
     for (const [userId, userData] of Object.entries(userIdeas)) {
@@ -96,24 +181,20 @@ export async function POST(request: NextRequest) {
           </div>
         </div>`;
 
+      const subject = `\u{1F4CA} Weekly Market Signals Digest \u2014 ${userData.ideas.length} idea${userData.ideas.length > 1 ? 's' : ''} tracked`;
+
       try {
-        const emailRes = await fetch('https://apps.abacus.ai/api/sendNotificationEmail', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            deployment_token: process.env.ABACUSAI_API_KEY,
-            app_id: process.env.WEB_APP_ID,
-            notification_id: process.env.NOTIF_ID_WEEKLY_MARKET_SIGNALS_DIGEST,
-            subject: `\u{1F4CA} Weekly Market Signals Digest \u2014 ${userData.ideas.length} idea${userData.ideas.length > 1 ? 's' : ''} tracked`,
-            body: htmlBody,
-            is_html: true,
-            recipient_email: userData.email,
-            sender_email: `noreply@${appUrl ? new URL(appUrl).hostname : 'ideavalidator.app'}`,
-            sender_alias: appName,
-          }),
+        const ok = await sendDigestEmail({
+          useResend,
+          useAbacusEmail,
+          userEmail: userData.email,
+          subject,
+          htmlBody,
+          appUrl,
+          appName,
+          abacusToken,
         });
-        const result = await emailRes.json();
-        if (result.success || result.notification_disabled) sent++;
+        if (ok) sent++;
       } catch (e) {
         console.error(`Failed to send digest to ${userData.email}:`, e);
       }
