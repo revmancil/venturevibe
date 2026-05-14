@@ -2,11 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  CheckCircle, Zap, BarChart3, Lightbulb, Target, Shield, DollarSign, Rocket,
-  Layers, Users, LayoutGrid, AlertTriangle, Sparkles, Mic, Presentation,
-  MessageCircle, FileText, Radio, GitCompareArrows, ArrowRight, TrendingUp,
-} from "lucide-react";
+import { LandingScreenshot } from "@/components/features/landing-screenshot";
+import { Zap, ArrowRight, TrendingUp } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Feel the Pulse of Your Next Big Idea",
@@ -54,56 +51,41 @@ const faqJsonLd = {
   ],
 };
 
+/** Slug = filename under public/landing/screenshots/ (e.g. micro-surveys.png). Omit file until you add it — placeholder shows. */
 const coreFeatures = [
-  { icon: CheckCircle, color: "blue", title: "Micro-Surveys", desc: "AI-generated survey questions tailored to validate your idea" },
-  { icon: BarChart3, color: "purple", title: "Competitor Analysis", desc: "Automatic research of key competitors and market positioning" },
-  { icon: Zap, color: "emerald", title: "Market Sizing", desc: "Estimated TAM, SAM, SOM and growth projections" },
+  { slug: "micro-surveys", color: "blue", title: "Micro-Surveys", desc: "AI-generated survey questions tailored to validate your idea" },
+  { slug: "competitor-analysis", color: "purple", title: "Competitor Analysis", desc: "Automatic research of key competitors and market positioning" },
+  { slug: "market-sizing", color: "emerald", title: "Market Sizing", desc: "Estimated TAM, SAM, SOM and growth projections" },
 ];
 
 const deepFeatures = [
-  { icon: Target, color: "rose", title: "Validation Score", desc: "0-100 score with detailed breakdown across 5 dimensions" },
-  { icon: Shield, color: "indigo", title: "SWOT Analysis", desc: "Strengths, weaknesses, opportunities, and threats" },
-  { icon: DollarSign, color: "emerald", title: "Pricing Strategy", desc: "Recommended pricing models, tiers, and revenue projections" },
-  { icon: Rocket, color: "orange", title: "Go-To-Market Plan", desc: "Channels, phases, and tactics to launch effectively" },
-  { icon: Layers, color: "blue", title: "MVP Features", desc: "Prioritized feature list to ship your minimum viable product" },
-  { icon: Users, color: "purple", title: "Customer Personas", desc: "Detailed profiles of your ideal customers" },
-  { icon: LayoutGrid, color: "cyan", title: "Business Model Canvas", desc: "Complete 9-block business model breakdown" },
-  { icon: AlertTriangle, color: "amber", title: "Risk Assessment", desc: "Identify and mitigate key risks before they bite" },
+  { slug: "validation-score", color: "rose", title: "Validation Score", desc: "0-100 score with detailed breakdown across 5 dimensions" },
+  { slug: "swot-analysis", color: "indigo", title: "SWOT Analysis", desc: "Strengths, weaknesses, opportunities, and threats" },
+  { slug: "pricing-strategy", color: "emerald", title: "Pricing Strategy", desc: "Recommended pricing models, tiers, and revenue projections" },
+  { slug: "gtm-plan", color: "orange", title: "Go-To-Market Plan", desc: "Channels, phases, and tactics to launch effectively" },
+  { slug: "mvp-features", color: "blue", title: "MVP Features", desc: "Prioritized feature list to ship your minimum viable product" },
+  { slug: "customer-personas", color: "purple", title: "Customer Personas", desc: "Detailed profiles of your ideal customers" },
+  { slug: "business-canvas", color: "cyan", title: "Business Model Canvas", desc: "Complete 9-block business model breakdown" },
+  { slug: "risk-assessment", color: "amber", title: "Risk Assessment", desc: "Identify and mitigate key risks before they bite" },
 ];
 
 const proFeatures = [
-  { icon: Sparkles, color: "pink", title: "Idea Refinement", desc: "AI suggestions to sharpen and improve your idea" },
-  { icon: Mic, color: "violet", title: "Elevator Pitches", desc: "Multiple pitch versions for different audiences" },
-  { icon: Presentation, color: "indigo", title: "Pitch Deck", desc: "10-slide investor pitch deck with PDF export" },
-  { icon: MessageCircle, color: "emerald", title: "AI Idea Coach", desc: "Chat with an AI mentor that knows your idea inside-out" },
-  { icon: FileText, color: "blue", title: "Full PDF Report", desc: "Download a comprehensive PDF of all your validation data" },
-  { icon: DollarSign, color: "emerald", title: "Revenue Simulator", desc: "Interactive 24-month projections with Conservative/Base/Aggressive presets" },
-  { icon: Radio, color: "rose", title: "Live Market Signals", desc: "Real-time trends, search interest, funding activity with history timeline" },
-  { icon: GitCompareArrows, color: "cyan", title: "Scenario Compare", desc: "Save & compare up to 3 financial scenarios side-by-side" },
+  { slug: "idea-refinement", color: "pink", title: "Idea Refinement", desc: "AI suggestions to sharpen and improve your idea" },
+  { slug: "elevator-pitches", color: "violet", title: "Elevator Pitches", desc: "Multiple pitch versions for different audiences" },
+  { slug: "pitch-deck", color: "indigo", title: "Pitch Deck", desc: "10-slide investor pitch deck with PDF export" },
+  { slug: "idea-coach", color: "emerald", title: "AI Idea Coach", desc: "Chat with an AI mentor that knows your idea inside-out" },
+  { slug: "pdf-report", color: "blue", title: "Full PDF Report", desc: "Download a comprehensive PDF of all your validation data" },
+  { slug: "revenue-simulator", color: "emerald", title: "Revenue Simulator", desc: "Interactive 24-month projections with Conservative/Base/Aggressive presets" },
+  { slug: "market-signals", color: "rose", title: "Live Market Signals", desc: "Real-time trends, search interest, funding activity with history timeline" },
+  { slug: "scenario-compare", color: "cyan", title: "Scenario Compare", desc: "Save & compare up to 3 financial scenarios side-by-side" },
 ];
 
-const colorMap: Record<string, { bg: string; text: string }> = {
-  blue: { bg: "bg-blue-100", text: "text-blue-600" },
-  purple: { bg: "bg-purple-100", text: "text-purple-600" },
-  emerald: { bg: "bg-emerald-100", text: "text-emerald-600" },
-  amber: { bg: "bg-amber-100", text: "text-amber-600" },
-  rose: { bg: "bg-rose-100", text: "text-rose-600" },
-  indigo: { bg: "bg-indigo-100", text: "text-indigo-600" },
-  orange: { bg: "bg-orange-100", text: "text-orange-600" },
-  cyan: { bg: "bg-cyan-100", text: "text-cyan-600" },
-  pink: { bg: "bg-pink-100", text: "text-pink-600" },
-  violet: { bg: "bg-violet-100", text: "text-violet-600" },
-};
-
-function FeatureCard({ icon: Icon, color, title, desc }: any) {
-  const c = colorMap[color] || colorMap.blue;
+function FeatureCard({ slug, color, title, desc }: { slug: string; color: string; title: string; desc: string }) {
   return (
-    <Card className="p-6 border border-border/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-      <div className={`p-3 w-fit ${c.bg} rounded-lg mb-4`}>
-        <Icon className={`w-6 h-6 ${c.text}`} />
-      </div>
-      <h3 className="font-semibold text-lg mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+    <Card className="overflow-hidden border border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+      <LandingScreenshot slug={slug} title={title} color={color} />
+      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
     </Card>
   );
 }
