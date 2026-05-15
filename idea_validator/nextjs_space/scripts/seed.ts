@@ -1,22 +1,24 @@
 import { prisma } from "../lib/prisma";
 import bcryptjs from "bcryptjs";
+import { DEMO_TEST_EMAIL, DEMO_TEST_PASSWORD } from "../lib/demo-auth";
 
 async function main() {
-  const email = "john@doe.com";
-  const password = "johndoe123";
-  const hashedPassword = await bcryptjs.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(DEMO_TEST_PASSWORD, 10);
 
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: {},
-    create: {
-      email,
+  const demo = await prisma.user.upsert({
+    where: { email: DEMO_TEST_EMAIL },
+    update: {
       password: hashedPassword,
-      name: "John Entrepreneur",
+      name: "Demo Founder",
+    },
+    create: {
+      email: DEMO_TEST_EMAIL,
+      password: hashedPassword,
+      name: "Demo Founder",
     },
   });
 
-  console.log("Seed user created:", user);
+  console.log("Demo user ready:", demo.email, "(password in lib/demo-auth.ts)");
 }
 
 main()

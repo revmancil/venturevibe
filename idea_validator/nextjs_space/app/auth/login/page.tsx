@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { LogIn } from "lucide-react";
+import { DemoLoginPanel } from "@/components/auth/demo-login-panel";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,6 +54,7 @@ export default function LoginPage() {
         <CardDescription>Sign in to your VentureVibe account</CardDescription>
       </CardHeader>
       <CardContent>
+        <DemoLoginPanel onFill={(e, p) => { setEmail(e); setPassword(p); }} />
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
