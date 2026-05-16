@@ -1,9 +1,31 @@
+function isLocalhostUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  return /localhost|127\.0\.0\.1/i.test(url);
+}
+
+/** On Vercel, ignore localhost NEXTAUTH_URL from a copied local .env. */
+export function resolveNextAuthUrl(): string | undefined {
+  const configured = process.env.NEXTAUTH_URL?.trim();
+  const onVercel = process.env.VERCEL === "1";
+
+  if (onVercel && isLocalhostUrl(configured) && process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  if (configured) return configured;
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return undefined;
+}
+
 /** Ensure NextAuth can resolve the app URL (critical on Vercel and non-default ports). */
 export function ensureAuthEnv(): void {
-  if (!process.env.NEXTAUTH_URL) {
-    if (process.env.VERCEL_URL) {
-      process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
-    }
+  const resolved = resolveNextAuthUrl();
+  if (resolved) {
+    process.env.NEXTAUTH_URL = resolved;
   }
 
   if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
@@ -18,8 +40,7 @@ export function getAuthSecret(): string | undefined {
 
 export function getAuthBaseUrl(): string {
   const raw =
-    process.env.NEXTAUTH_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ||
+    resolveNextAuthUrl() ||
     process.env.SITE_URL ||
     "http://localhost:3000";
   return raw.replace(/\/+$/, "");

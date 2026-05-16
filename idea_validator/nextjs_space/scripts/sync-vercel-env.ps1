@@ -31,9 +31,17 @@ foreach ($name in $vars) {
     Write-Warning "DATABASE_URL must start with postgresql:// or postgres://"
   }
   foreach ($target in $targets) {
+    if ($name -eq "NEXTAUTH_URL" -and $target -ne "development" -and $value -match "localhost|127\.0\.0\.1") {
+      Write-Warning "NEXTAUTH_URL is localhost — set it to your Vercel URL before syncing to $target."
+      continue
+    }
     Write-Host "Updating $name ($target)..."
     vercel env update $name $target --value $value --yes
   }
 }
+
+Write-Host ""
+Write-Host "Production URL should be like: https://venturevibe-revmancils-projects.vercel.app"
+Write-Host "DATABASE_URL should be Supabase POOLER URI (Connect -> Session pooler), not direct db host."
 
 Write-Host "Done. Redeploy: vercel --prod"
