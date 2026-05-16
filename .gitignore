@@ -8,3 +8,6 @@ idea_validator/nextjs_space/.next/
 # Agent outputs may embed pasted secrets or full .env dumps
 shared/task_summaries/
 shared/task_run_transcripts/
+
+.vercel
+.env*.local
