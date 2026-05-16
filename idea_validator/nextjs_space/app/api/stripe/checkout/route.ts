@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { getUserSubscription } from '@/lib/subscription';
 import { prisma } from '@/lib/prisma';
 
@@ -14,6 +14,7 @@ const PRICE_IDS: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripe();
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

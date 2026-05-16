@@ -111,5 +111,4 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/login",
   },
   secret: getAuthSecret(),
-  trustHost: true,
 };
