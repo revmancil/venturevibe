@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Maximize2 } from "lucide-react";
 import {
   Dialog,
@@ -25,6 +25,11 @@ const accentByColor: Record<string, { ring: string; label: string }> = {
 
 type ImgStatus = "loading" | "loaded" | "error";
 
+function statusFromImage(img: HTMLImageElement): ImgStatus {
+  if (!img.complete) return "loading";
+  return img.naturalHeight > 0 ? "loaded" : "error";
+}
+
 export function LandingScreenshot({
   slug,
   title,
@@ -38,6 +43,19 @@ export function LandingScreenshot({
   const src = `/landing/screenshots/${slug}.png`;
   const [imgStatus, setImgStatus] = useState<ImgStatus>("loading");
   const [open, setOpen] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const syncImgStatus = useCallback(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    const next = statusFromImage(img);
+    setImgStatus((prev) => (prev === next ? prev : next));
+  }, []);
+
+  // Cached images can finish before onLoad is attached; check .complete after mount.
+  useEffect(() => {
+    syncImgStatus();
+  }, [src, syncImgStatus]);
 
   const canOpen = imgStatus === "loaded" || imgStatus === "error";
 
@@ -63,8 +81,10 @@ export function LandingScreenshot({
         <div className="relative aspect-[5/3] max-h-40 w-full sm:max-h-44">
           {/* eslint-disable-next-line @next/next/no-img-element -- public path; 404 until file exists */}
           <img
+            ref={imgRef}
             src={src}
             alt=""
+            decoding="async"
             className={cn(
               "absolute inset-0 z-[1] h-full w-full object-cover object-top transition-opacity duration-300",
               imgStatus === "loaded" ? "opacity-100" : "opacity-0"
