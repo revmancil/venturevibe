@@ -3,6 +3,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./prisma";
 import bcryptjs from "bcryptjs";
+import { DEMO_TEST_EMAIL, DEMO_TEST_PASSWORD } from "./demo-auth";
+
+function shouldAutoProvisionDemoUser(): boolean {
+  return (
+    process.env.NODE_ENV === "development" ||
+    process.env.NEXT_PUBLIC_SHOW_DEMO_LOGIN === "true"
+  );
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -15,24 +23,44 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials");
+          return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        const email = credentials.email.trim();
+        const password = credentials.password;
+
+        const isDemoAttempt =
+          email.toLowerCase() === DEMO_TEST_EMAIL.toLowerCase() &&
+          password === DEMO_TEST_PASSWORD;
+
+        if (isDemoAttempt && shouldAutoProvisionDemoUser()) {
+          const hashedPassword = await bcryptjs.hash(DEMO_TEST_PASSWORD, 10);
+          await prisma.user.upsert({
+            where: { email: DEMO_TEST_EMAIL },
+            update: {
+              password: hashedPassword,
+              name: "Demo Founder",
+            },
+            create: {
+              email: DEMO_TEST_EMAIL,
+              password: hashedPassword,
+              name: "Demo Founder",
+            },
+          });
+        }
+
+        const user = await prisma.user.findFirst({
+          where: { email: { equals: email, mode: "insensitive" } },
         });
 
-        if (!user || !user.password) {
-          throw new Error("Invalid credentials");
+        if (!user?.password) {
+          return null;
         }
 
-        const isPasswordValid = await bcryptjs.compare(
-          credentials.password,
-          user.password
-        );
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
 
         if (!isPasswordValid) {
-          throw new Error("Invalid credentials");
+          return null;
         }
 
         return {
