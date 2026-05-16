@@ -4,7 +4,7 @@ export function authErrorMessage(error?: string | null): string {
     return "Invalid email or password.";
   }
   if (error === "Configuration") {
-    return "Sign-in is misconfigured on the server. Contact support if this persists.";
+    return "Server misconfiguration: set DATABASE_URL (Supabase pooler URI), NEXTAUTH_SECRET, and NEXTAUTH_URL on Vercel, then redeploy.";
   }
   return error;
 }

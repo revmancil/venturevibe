@@ -16,8 +16,12 @@ export async function GET() {
     database = "error";
   }
 
+  const databaseUrl = process.env.DATABASE_URL ?? "";
+  const databaseUrlValid = /^postgres(ql)?:\/\//.test(databaseUrl);
+
   return NextResponse.json({
     database,
+    databaseUrlValid,
     nextAuthSecret: Boolean(getAuthSecret()),
     nextAuthUrl: process.env.NEXTAUTH_URL ? "set" : "missing",
     authBaseUrl: getAuthBaseUrl(),

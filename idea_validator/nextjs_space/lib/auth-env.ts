@@ -12,7 +12,8 @@ export function ensureAuthEnv(): void {
 }
 
 export function getAuthSecret(): string | undefined {
-  return process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+  const secret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+  return secret?.trim() ? secret : undefined;
 }
 
 export function getAuthBaseUrl(): string {

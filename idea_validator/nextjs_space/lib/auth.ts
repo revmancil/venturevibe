@@ -22,6 +22,14 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (!getAuthSecret()) {
+          throw new Error("Configuration");
+        }
+
+        if (!process.env.DATABASE_URL?.match(/^postgres(ql)?:\/\//)) {
+          throw new Error("Configuration");
+        }
+
         const email = normalizeEmail(credentials.email);
         const password = credentials.password;
 
@@ -67,7 +75,16 @@ export const authOptions: NextAuthOptions = {
           };
         } catch (error) {
           console.error("[auth] authorize failed:", error);
-          return null;
+          const message = error instanceof Error ? error.message : String(error);
+          if (
+            message.includes("Can't reach database") ||
+            message.includes("P1001") ||
+            message.includes("P1012") ||
+            message.includes("Connection")
+          ) {
+            throw new Error("Configuration");
+          }
+          throw error;
         }
       },
     }),
