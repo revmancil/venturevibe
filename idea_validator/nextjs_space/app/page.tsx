@@ -78,6 +78,10 @@ const proFeatures = [
   { slug: "revenue-simulator", color: "emerald", title: "Revenue Simulator", desc: "Interactive 24-month projections with Conservative/Base/Aggressive presets" },
   { slug: "market-signals", color: "rose", title: "Live Market Signals", desc: "Real-time trends, search interest, funding activity with history timeline" },
   { slug: "scenario-compare", color: "cyan", title: "Scenario Compare", desc: "Save & compare up to 3 financial scenarios side-by-side" },
+  { slug: "financial-projections", color: "indigo", title: "Financial Projections", desc: "3–5 year revenue, burn rate, runway & break-even with editable assumptions" },
+  { slug: "name-checker", color: "violet", title: "Name & Domain Checker", desc: "Brandable startup names with live domain availability screening" },
+  { slug: "funding-readiness", color: "amber", title: "Funding Readiness Score", desc: "Investor-ready assessment across traction, market, team & defensibility" },
+  { slug: "positioning-map", color: "cyan", title: "Competitive Positioning Map", desc: "Visual 2×2 map placing your startup vs competitors" },
 ];
 
 function FeatureCard({ slug, color, title, desc }: { slug: string; color: string; title: string; desc: string }) {

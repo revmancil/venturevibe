@@ -11,6 +11,7 @@ import {
   ArrowLeft, Loader2, CheckCircle, BarChart3, TrendingUp, Crown, RefreshCw, Download,
   Target, Shield, DollarSign, Rocket, Layers, Users, LayoutGrid, AlertTriangle,
   Sparkles, Mic, Presentation, MessageCircle, Radio,
+  LineChart, Globe, Banknote, Map,
 } from 'lucide-react';
 import SurveyResults from './survey-results';
 import CompetitorAnalysis from './competitor-analysis';
@@ -29,6 +30,10 @@ import PitchDeckViewer from './pitch-deck-viewer';
 import IdeaCoachChat from './idea-coach-chat';
 import RevenueSimulator from './revenue-simulator';
 import MarketSignals from './market-signals';
+import FinancialProjectionsBuilder from './financial-projections-builder';
+import NameDomainChecker from './name-domain-checker';
+import FundingReadinessScore from './funding-readiness-score';
+import CompetitivePositioningMap from './competitive-positioning-map';
 
 interface Idea {
   id: string;
@@ -42,7 +47,9 @@ interface Idea {
   validationReport: any | null;
 }
 
-type AnalysisType = 'survey' | 'competitors' | 'market' | 'score' | 'swot' | 'pricing' | 'gtm' | 'mvp' | 'personas' | 'canvas' | 'risks' | 'refinement' | 'elevator-pitch' | 'pitch-deck' | 'revenue-sim' | 'market-signals';
+type AnalysisType =
+  | 'survey' | 'competitors' | 'market' | 'score' | 'swot' | 'pricing' | 'gtm' | 'mvp' | 'personas' | 'canvas' | 'risks' | 'refinement' | 'elevator-pitch' | 'pitch-deck' | 'revenue-sim' | 'market-signals'
+  | 'financial-projections' | 'name-checker' | 'funding-readiness' | 'positioning-map';
 
 interface ValidationReportClientProps {
   idea: Idea;
@@ -373,6 +380,65 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
     },
   ];
 
+  const investorPrepAnalyses = [
+    {
+      type: 'financial-projections' as AnalysisType,
+      label: 'Financial Projections',
+      desc: '3–5 year revenue, burn, runway & break-even with editable assumptions',
+      icon: <LineChart className="w-5 h-5 text-indigo-600" />,
+      iconBg: 'bg-indigo-100',
+      btnColor: 'bg-indigo-500 hover:bg-indigo-600',
+      endpoint: 'financial-projections',
+      successMsg: 'Financial projections ready!',
+      hasData: !!report?.financialProjectionsData,
+      genLabel: 'Build Projections',
+      regenLabel: 'Rebuild',
+      loadingLabel: 'Modeling...',
+    },
+    {
+      type: 'name-checker' as AnalysisType,
+      label: 'Name & Domain Checker',
+      desc: 'Brandable names with live domain & trademark risk screening',
+      icon: <Globe className="w-5 h-5 text-violet-600" />,
+      iconBg: 'bg-violet-100',
+      btnColor: 'bg-violet-500 hover:bg-violet-600',
+      endpoint: 'name-checker',
+      successMsg: 'Name ideas & domain checks ready!',
+      hasData: !!report?.nameCheckerData,
+      genLabel: 'Generate Names',
+      regenLabel: 'Regenerate',
+      loadingLabel: 'Checking domains...',
+    },
+    {
+      type: 'funding-readiness' as AnalysisType,
+      label: 'Funding Readiness',
+      desc: 'Investor-ready score across traction, market, team & defensibility',
+      icon: <Banknote className="w-5 h-5 text-amber-600" />,
+      iconBg: 'bg-amber-100',
+      btnColor: 'bg-amber-500 hover:bg-amber-600',
+      endpoint: 'funding-readiness',
+      successMsg: 'Funding readiness assessed!',
+      hasData: !!report?.fundingReadinessData,
+      genLabel: 'Score Readiness',
+      regenLabel: 'Re-score',
+      loadingLabel: 'Assessing...',
+    },
+    {
+      type: 'positioning-map' as AnalysisType,
+      label: 'Positioning Map',
+      desc: '2×2 competitive map on the axes that matter for your market',
+      icon: <Map className="w-5 h-5 text-cyan-600" />,
+      iconBg: 'bg-cyan-100',
+      btnColor: 'bg-cyan-500 hover:bg-cyan-600',
+      endpoint: 'positioning-map',
+      successMsg: 'Positioning map created!',
+      hasData: !!report?.positioningMapData,
+      genLabel: 'Build Map',
+      regenLabel: 'Rebuild',
+      loadingLabel: 'Mapping...',
+    },
+  ];
+
   const renderAnalysisButton = (a: typeof coreAnalyses[0], size?: 'sm' | 'default') => {
     const isLoading = loadingAnalysis === a.type;
     if (isLoading) {
@@ -465,7 +531,25 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
           ))}
         </div>
 
-        {/* Deep analyses: 8 new features */}
+        {/* Investor prep */}
+        <div className="mb-8">
+          <h2 className="font-display text-2xl font-bold mb-1">Investor Prep</h2>
+          <p className="text-muted-foreground text-sm mb-6">Tools founders use before investor meetings</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {investorPrepAnalyses.map((a) => (
+              <Card key={a.type} className="p-4 border border-border/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`p-2 ${a.iconBg} rounded-lg`}>{a.icon}</div>
+                  <h4 className="font-semibold text-sm">{a.label}</h4>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">{a.desc}</p>
+                {renderAnalysisButton(a, 'sm')}
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Deep analyses */}
         <div className="mb-8">
           <h2 className="font-display text-2xl font-bold mb-1">Deep Analysis</h2>
           <p className="text-muted-foreground text-sm mb-6">Go deeper with advanced AI-powered business analyses</p>
@@ -517,6 +601,10 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
             {report.pitchDeckData && <PitchDeckViewer data={report.pitchDeckData} ideaId={idea.id} />}
             {report.revenueSimData && <RevenueSimulator data={report.revenueSimData} />}
             {report.marketSignalsData && <MarketSignals data={report.marketSignalsData} history={Array.isArray(report.marketSignalsHistory) ? report.marketSignalsHistory : undefined} />}
+            {report.financialProjectionsData && <FinancialProjectionsBuilder data={report.financialProjectionsData} />}
+            {report.nameCheckerData && <NameDomainChecker data={report.nameCheckerData} />}
+            {report.fundingReadinessData && <FundingReadinessScore data={report.fundingReadinessData} />}
+            {report.positioningMapData && <CompetitivePositioningMap data={report.positioningMapData} />}
           </div>
         )}
 

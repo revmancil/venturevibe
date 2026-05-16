@@ -126,6 +126,10 @@ model ValidationReport {
   revenueSimData      Json?
   marketSignalsData   Json?
   marketSignalsHistory Json?
+  financialProjectionsData Json?
+  nameCheckerData          Json?
+  fundingReadinessData     Json?
+  positioningMapData       Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
