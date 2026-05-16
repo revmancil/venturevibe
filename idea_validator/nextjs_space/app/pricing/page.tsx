@@ -11,10 +11,18 @@ import { toast } from 'sonner';
 import { PLANS } from '@/lib/plans';
 
 export default function PricingPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const handleSubscribe = async (plan: string) => {
+    setCheckoutError(null);
+
+    if (status === 'loading') {
+      toast.message('Checking your session…');
+      return;
+    }
+
     if (!session) {
       window.location.href = '/auth/signup';
       return;
@@ -28,14 +36,27 @@ export default function PricingPage() {
         body: JSON.stringify({ plan }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const message = data.error || `Checkout failed (${res.status})`;
+        setCheckoutError(message);
+        toast.error(message);
+        return;
+      }
+
       if (data.url) {
         window.location.href = data.url;
-      } else {
-        toast.error(data.error || 'Failed to start checkout');
+        return;
       }
+
+      const message = data.error || 'Failed to start checkout';
+      setCheckoutError(message);
+      toast.error(message);
     } catch {
-      toast.error('Something went wrong');
+      const message = 'Something went wrong. Try again.';
+      setCheckoutError(message);
+      toast.error(message);
     } finally {
       setLoading(null);
     }
@@ -88,6 +109,15 @@ export default function PricingPage() {
             Start free and scale as you grow. All plans include AI-powered analysis.
           </p>
         </div>
+
+        {checkoutError && (
+          <div
+            role="alert"
+            className="max-w-2xl mx-auto mb-8 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          >
+            {checkoutError}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {planEntries.map(([key, plan]) => {

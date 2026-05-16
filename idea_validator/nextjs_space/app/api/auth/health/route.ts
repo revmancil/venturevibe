@@ -30,12 +30,21 @@ export async function GET() {
 
   const databaseUrl = process.env.DATABASE_URL ?? "";
   const databaseUrlValid = /^postgres(ql)?:\/\//.test(databaseUrl);
+  const databaseUrlHostType = (() => {
+    if (/pooler\.supabase\.com/i.test(databaseUrl)) return "pooler";
+    if (/db\.[a-z0-9]+\.supabase\.co/i.test(databaseUrl)) return "direct";
+    return "unknown";
+  })();
   const configuredNextAuthUrl = process.env.NEXTAUTH_URL?.trim();
   const nextAuthUrlLooksLocal = /localhost|127\.0\.0\.1/i.test(configuredNextAuthUrl ?? "");
 
   return NextResponse.json({
     database,
-    databaseHint,
+    databaseHint:
+      databaseUrlHostType === "direct" && database === "error"
+        ? "DATABASE_URL uses direct db.*.supabase.co — replace with Session pooler URI from Supabase Connect (host contains pooler.supabase.com)."
+        : databaseHint,
+    databaseUrlHostType,
     databaseUrlValid,
     nextAuthSecret: Boolean(getAuthSecret()),
     nextAuthUrl: configuredNextAuthUrl ? "set" : "missing",
