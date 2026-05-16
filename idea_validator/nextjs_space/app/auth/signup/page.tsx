@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Sparkles, CheckCircle, ArrowRight } from "lucide-react";
+import { authErrorMessage } from "@/lib/auth-errors";
+import { normalizeEmail } from "@/lib/normalize-email";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -27,7 +29,11 @@ export default function SignupPage() {
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({
+          email: normalizeEmail(email),
+          password,
+          name: name.trim(),
+        }),
       });
 
       if (!response.ok) {
@@ -39,7 +45,7 @@ export default function SignupPage() {
 
       // Try auto sign-in
       const signInResult = await signIn("credentials", {
-        email,
+        email: normalizeEmail(email),
         password,
         redirect: false,
       });
@@ -47,10 +53,12 @@ export default function SignupPage() {
       if (signInResult?.ok) {
         toast.success("Account created! Redirecting to dashboard...");
         router.replace("/dashboard");
+        router.refresh();
         return;
       }
 
       // Auto sign-in failed — show success state
+      toast.error(authErrorMessage(signInResult?.error));
       setAccountCreated(true);
     } catch (error) {
       console.error("Signup error:", error);

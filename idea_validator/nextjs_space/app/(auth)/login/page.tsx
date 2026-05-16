@@ -11,6 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { LogIn } from "lucide-react";
 import { DemoLoginPanel } from "@/components/auth/demo-login-panel";
+import { authErrorMessage } from "@/lib/auth-errors";
+import { normalizeEmail } from "@/lib/normalize-email";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,15 +26,16 @@ export default function LoginPage() {
 
     try {
       const result = await signIn("credentials", {
-        email,
+        email: normalizeEmail(email),
         password,
         redirect: false,
       });
 
       if (result?.ok) {
         router.replace("/dashboard");
+        router.refresh();
       } else {
-        toast.error(result?.error || "Login failed");
+        toast.error(authErrorMessage(result?.error));
       }
     } catch (error) {
       console.error("Login error:", error);
