@@ -13,7 +13,7 @@ export default function AuthLayout({
   const router = useRouter();
 
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user?.id) {
       router.replace("/dashboard");
     }
   }, [session, router]);

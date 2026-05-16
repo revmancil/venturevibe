@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,6 @@ import { authErrorMessage } from "@/lib/auth-errors";
 import { normalizeEmail } from "@/lib/normalize-email";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,12 +29,13 @@ export default function LoginPage() {
         redirect: false,
       });
 
-      if (result?.ok) {
-        router.replace("/dashboard");
-        router.refresh();
-      } else {
-        toast.error(authErrorMessage(result?.error));
+      if (result?.error) {
+        toast.error(authErrorMessage(result.error));
+        return;
       }
+
+      // Full navigation so the session cookie is sent on the first dashboard request.
+      window.location.assign("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
       toast.error("An error occurred during login");

@@ -2,13 +2,16 @@ import { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import bcryptjs from "bcryptjs";
-import { DEMO_TEST_EMAIL, DEMO_TEST_PASSWORD, isDemoLoginEnabled } from "./demo-auth";
+import { DEMO_TEST_EMAIL, DEMO_TEST_PASSWORD } from "./demo-auth";
 import { normalizeEmail } from "./normalize-email";
+import { ensureAuthEnv, getAuthSecret } from "./auth-env";
+
+ensureAuthEnv();
 
 export const authOptions: NextAuthOptions = {
-  // Credentials + JWT only — PrismaAdapter conflicts with credential sign-in on serverless.
   providers: [
     CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -26,7 +29,8 @@ export const authOptions: NextAuthOptions = {
           const isDemoAttempt =
             email === DEMO_TEST_EMAIL && password === DEMO_TEST_PASSWORD;
 
-          if (isDemoAttempt && isDemoLoginEnabled()) {
+          // Demo credentials are public in lib/demo-auth.ts — always ensure user exists.
+          if (isDemoAttempt) {
             const hashedPassword = await bcryptjs.hash(DEMO_TEST_PASSWORD, 10);
             await prisma.user.upsert({
               where: { email: DEMO_TEST_EMAIL },
@@ -71,13 +75,16 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = (user as { id: string }).id;
+        const id = (user as { id: string }).id;
+        token.id = id;
+        token.sub = id;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token?.id) {
-        (session.user as { id: string }).id = token.id as string;
+      const userId = (token.id ?? token.sub) as string | undefined;
+      if (session.user && userId) {
+        (session.user as { id: string }).id = userId;
       }
       return session;
     },
@@ -86,6 +93,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/login",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: getAuthSecret(),
   trustHost: true,
 };

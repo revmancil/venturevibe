@@ -50,16 +50,14 @@ export default function SignupPage() {
         redirect: false,
       });
 
-      if (signInResult?.ok) {
-        toast.success("Account created! Redirecting to dashboard...");
-        router.replace("/dashboard");
-        router.refresh();
+      if (signInResult?.error) {
+        toast.error(authErrorMessage(signInResult.error));
+        setAccountCreated(true);
         return;
       }
 
-      // Auto sign-in failed — show success state
-      toast.error(authErrorMessage(signInResult?.error));
-      setAccountCreated(true);
+      toast.success("Account created! Redirecting to dashboard...");
+      window.location.assign("/dashboard");
     } catch (error) {
       console.error("Signup error:", error);
       toast.error("An error occurred during signup");
