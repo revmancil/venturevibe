@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,10 +27,19 @@ export default function LoginPage() {
         email: normalizeEmail(email),
         password,
         redirect: false,
+        callbackUrl: "/dashboard",
       });
 
-      if (result?.error) {
-        toast.error(authErrorMessage(result.error));
+      if (!result?.ok || result.error) {
+        toast.error(authErrorMessage(result?.error));
+        return;
+      }
+
+      const session = await getSession();
+      if (!session?.user?.id) {
+        toast.error(
+          "Signed in but session was not saved. Check NEXTAUTH_URL and NEXTAUTH_SECRET on Vercel."
+        );
         return;
       }
 

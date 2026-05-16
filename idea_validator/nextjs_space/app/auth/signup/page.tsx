@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -48,10 +48,20 @@ export default function SignupPage() {
         email: normalizeEmail(email),
         password,
         redirect: false,
+        callbackUrl: "/dashboard",
       });
 
-      if (signInResult?.error) {
-        toast.error(authErrorMessage(signInResult.error));
+      if (!signInResult?.ok || signInResult.error) {
+        toast.error(authErrorMessage(signInResult?.error));
+        setAccountCreated(true);
+        return;
+      }
+
+      const session = await getSession();
+      if (!session?.user?.id) {
+        toast.error(
+          "Account created but sign-in session failed. Try signing in from the login page."
+        );
         setAccountCreated(true);
         return;
       }
