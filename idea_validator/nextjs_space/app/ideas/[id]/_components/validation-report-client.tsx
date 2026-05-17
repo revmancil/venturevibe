@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -61,8 +61,26 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
   const [loadingAnalysis, setLoadingAnalysis] = useState<AnalysisType | null>(null);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [limitMessage, setLimitMessage] = useState('');
+  const [llmConfigured, setLlmConfigured] = useState<boolean | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/llm/health')
+      .then((res) => res.json())
+      .then((data) => setLlmConfigured(Boolean(data.configured)))
+      .catch(() => setLlmConfigured(null));
+  }, []);
+
+  const parseApiError = async (response: Response) => {
+    try {
+      const data = await response.json();
+      const parts = [data.error, data.hint].filter(Boolean);
+      return parts.join(' — ') || `Request failed (${response.status})`;
+    } catch {
+      return `Request failed (${response.status})`;
+    }
+  };
 
   const handleDownloadReport = async () => {
     setIsDownloadingReport(true);
@@ -113,7 +131,14 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
       // Pitch deck uses a non-streaming GET request
       if (type === 'pitch-deck') {
         const response = await fetch(`/api/validation/${endpoint}?ideaId=${idea.id}`);
-        if (!response.ok) throw new Error('Failed');
+        if (!response.ok) {
+          const message = await parseApiError(response);
+          toast.error(response.status === 503 ? 'AI not configured' : 'Generation failed', {
+            description: message,
+          });
+          setLoadingAnalysis(null);
+          return;
+        }
         toast.success(successMsg);
         await refreshIdea();
         setLoadingAnalysis(null);
@@ -130,7 +155,14 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
           return;
         }
       }
-      if (!response.ok) throw new Error('Failed');
+      if (!response.ok) {
+        const message = await parseApiError(response);
+        toast.error(response.status === 503 ? 'AI not configured' : 'Generation failed', {
+          description: message,
+        });
+        setLoadingAnalysis(null);
+        return;
+      }
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No body');
       while (true) {
@@ -566,6 +598,21 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
             ))}
           </div>
         </div>
+
+        {llmConfigured === false && (
+          <Card className="p-6 border-2 border-red-300 bg-red-50 mb-8">
+            <h3 className="font-display text-lg font-bold mb-2 text-red-900">AI validation is not configured</h3>
+            <p className="text-sm text-red-800/90 mb-2">
+              The server returned 503 because no LLM API key is set. Add{' '}
+              <code className="rounded bg-white/80 px-1 py-0.5 text-xs">AI_API_KEY</code> in Vercel
+              (Project → Settings → Environment Variables), then redeploy.
+            </p>
+            <p className="text-xs text-red-800/80">
+              OpenAI example: <code className="rounded bg-white/80 px-1 py-0.5">AI_API_BASE_URL=https://api.openai.com/v1</code>,{' '}
+              <code className="rounded bg-white/80 px-1 py-0.5">AI_MODEL=gpt-4o-mini</code>
+            </p>
+          </Card>
+        )}
 
         {/* Upgrade prompt */}
         {showUpgradePrompt && (
