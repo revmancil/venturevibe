@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
 import { getFallbackSiteUrl } from "@/lib/site-url";
+import { AI_TOOL_COUNT, AI_TOOLS_SUMMARY } from "@/lib/marketing";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | VentureVibe",
   },
   description:
-    "Validate your startup or business idea in 48 hours with 16 AI-powered tools: market sizing, competitor analysis, SWOT, pricing strategy, MVP roadmap, pitch deck, and revenue simulator.",
+    `Validate your startup or business idea in 48 hours with ${AI_TOOL_COUNT} AI-powered tools: ${AI_TOOLS_SUMMARY}.`,
   keywords: [
     "business idea validation",
     "startup validation",
@@ -45,6 +46,11 @@ export const metadata: Metadata = {
     "MVP planning",
     "pitch deck generator",
     "revenue simulator",
+    "financial projections startup",
+    "funding readiness score",
+    "startup name generator",
+    "domain availability checker",
+    "competitive positioning map",
     "go to market plan",
     "customer personas",
     "business model canvas",
@@ -68,7 +74,7 @@ export const metadata: Metadata = {
     siteName: "VentureVibe",
     title: "VentureVibe — Feel the Pulse of Your Next Big Idea",
     description:
-      "16 AI-powered tools to validate startup ideas: surveys, competitor research, market sizing, SWOT, pricing, MVP, pitch deck, and more.",
+      `${AI_TOOL_COUNT} AI-powered tools to validate startup ideas: ${AI_TOOLS_SUMMARY}.`,
     images: [
       {
         url: "/og-image.png",
@@ -83,7 +89,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VentureVibe — Feel the Pulse of Your Next Big Idea",
     description:
-      "16 AI-powered tools to validate startup ideas fast: market sizing, competitor analysis, SWOT, MVP, pitch deck.",
+      `${AI_TOOL_COUNT} AI-powered tools to validate startup ideas fast: market sizing, financial projections, funding readiness, pitch deck, and more.`,
     images: ["/og-image.png"],
   },
   robots: {
@@ -130,7 +136,7 @@ const jsonLd = {
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       description:
-        "Validate business ideas in 48 hours with 16 AI-powered tools including market sizing, competitor analysis, SWOT, pricing strategy, MVP planning, and pitch deck generation.",
+        `Validate business ideas in 48 hours with ${AI_TOOL_COUNT} AI-powered tools including ${AI_TOOLS_SUMMARY}.`,
       offers: [
         {
           "@type": "Offer",

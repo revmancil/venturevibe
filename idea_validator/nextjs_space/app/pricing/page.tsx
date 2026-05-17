@@ -10,6 +10,7 @@ import { Check, ArrowLeft, Loader2, Crown, Sparkles } from 'lucide-react';
 import { VentureVibeLogo } from '@/components/brand/venturevibe-logo';
 import { toast } from 'sonner';
 import { PLANS } from '@/lib/plans';
+import { AI_TOOL_COUNT_LABEL } from '@/lib/marketing';
 
 export default function PricingPage() {
   const { data: session, status } = useSession();
@@ -102,7 +103,7 @@ export default function PricingPage() {
             Choose your validation power
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Start free and scale as you grow. All plans include AI-powered analysis.
+            Start free and scale as you grow. All plans include {AI_TOOL_COUNT_LABEL.toLowerCase()} for validation, investor prep, and pitching.
           </p>
         </div>
 

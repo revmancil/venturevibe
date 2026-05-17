@@ -37,6 +37,12 @@ export const PLANS = {
     features: [
       'Unlimited idea validations',
       'Everything in Pro, plus:',
+      '5-year financial projections builder',
+      'Startup name & domain checker',
+      'Funding readiness score',
+      'Competitive positioning map (2×2)',
+      'Revenue simulator & scenario compare',
+      'Live market signals',
       'Idea refinement suggestions',
       'Elevator pitch generator',
       'Investor pitch deck with PDF export',

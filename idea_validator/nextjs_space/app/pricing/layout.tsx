@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { AI_TOOL_COUNT } from "@/lib/marketing";
 
 export const metadata: Metadata = {
   title: "Pricing — Free, Pro & Business Plans",
   description:
-    "Simple, transparent pricing for VentureVibe. Start free with 2 validations/month, upgrade to Pro ($29/mo) for 15 validations, or Business ($79/mo) for unlimited AI-powered business idea validations.",
+    `Simple, transparent pricing for VentureVibe. Start free with 2 validations/month, upgrade to Pro ($29/mo) for 15 validations, or Business ($79/mo) for unlimited access to all ${AI_TOOL_COUNT} AI validation tools.`,
   alternates: { canonical: "/pricing" },
   openGraph: {
     title: "VentureVibe Pricing — Free, Pro & Business",

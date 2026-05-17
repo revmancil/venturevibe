@@ -5,11 +5,12 @@ import { Card } from "@/components/ui/card";
 import { LandingScreenshot } from "@/components/features/landing-screenshot";
 import { Zap, ArrowRight } from "lucide-react";
 import { VentureVibeLogo } from "@/components/brand/venturevibe-logo";
+import { AI_TOOL_COUNT, AI_TOOL_COUNT_LABEL, AI_TOOLS_SUMMARY } from "@/lib/marketing";
 
 export const metadata: Metadata = {
   title: "Feel the Pulse of Your Next Big Idea",
   description:
-    "VentureVibe helps entrepreneurs validate startup ideas in 48 hours using 16 AI-powered tools: market sizing, competitor analysis, SWOT, pricing, MVP, pitch deck, and revenue simulator. Start free.",
+    `VentureVibe helps entrepreneurs validate startup ideas in 48 hours using ${AI_TOOL_COUNT} AI-powered tools: ${AI_TOOLS_SUMMARY}. Start free.`,
   alternates: { canonical: "/" },
 };
 
@@ -22,7 +23,7 @@ const faqJsonLd = {
       name: "How does VentureVibe validate business ideas?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "VentureVibe uses 16 AI-powered tools — including micro-surveys, competitor analysis, market sizing (TAM/SAM/SOM), SWOT, pricing strategy, MVP planning, customer personas, and pitch deck generation — to deliver a comprehensive validation report in 48 hours.",
+        text: `VentureVibe uses ${AI_TOOL_COUNT} AI-powered tools — including ${AI_TOOLS_SUMMARY} — to deliver a comprehensive validation report in 48 hours.`,
       },
     },
     {
@@ -70,7 +71,14 @@ const deepFeatures = [
   { slug: "risk-assessment", color: "amber", title: "Risk Assessment", desc: "Identify and mitigate key risks before they bite" },
 ];
 
-const proFeatures = [
+const investorPrepFeatures = [
+  { slug: "financial-projections", color: "indigo", title: "Financial Projections", desc: "3–5 year revenue, burn rate, runway & break-even with editable assumptions" },
+  { slug: "name-checker", color: "violet", title: "Name & Domain Checker", desc: "Brandable startup names with live domain availability screening" },
+  { slug: "funding-readiness", color: "amber", title: "Funding Readiness Score", desc: "Investor-ready assessment across traction, market, team & defensibility" },
+  { slug: "positioning-map", color: "cyan", title: "Competitive Positioning Map", desc: "Visual 2×2 map placing your startup vs competitors on key dimensions" },
+];
+
+const pitchFeatures = [
   { slug: "idea-refinement", color: "pink", title: "Idea Refinement", desc: "AI suggestions to sharpen and improve your idea" },
   { slug: "elevator-pitches", color: "violet", title: "Elevator Pitches", desc: "Multiple pitch versions for different audiences" },
   { slug: "pitch-deck", color: "indigo", title: "Pitch Deck", desc: "10-slide investor pitch deck with PDF export" },
@@ -79,10 +87,6 @@ const proFeatures = [
   { slug: "revenue-simulator", color: "emerald", title: "Revenue Simulator", desc: "Interactive 24-month projections with Conservative/Base/Aggressive presets" },
   { slug: "market-signals", color: "rose", title: "Live Market Signals", desc: "Real-time trends, search interest, funding activity with history timeline" },
   { slug: "scenario-compare", color: "cyan", title: "Scenario Compare", desc: "Save & compare up to 3 financial scenarios side-by-side" },
-  { slug: "financial-projections", color: "indigo", title: "Financial Projections", desc: "3–5 year revenue, burn rate, runway & break-even with editable assumptions" },
-  { slug: "name-checker", color: "violet", title: "Name & Domain Checker", desc: "Brandable startup names with live domain availability screening" },
-  { slug: "funding-readiness", color: "amber", title: "Funding Readiness Score", desc: "Investor-ready assessment across traction, market, team & defensibility" },
-  { slug: "positioning-map", color: "cyan", title: "Competitive Positioning Map", desc: "Visual 2×2 map placing your startup vs competitors" },
 ];
 
 function FeatureCard({ slug, color, title, desc }: { slug: string; color: string; title: string; desc: string }) {
@@ -125,7 +129,7 @@ export default function HomePage() {
             </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm font-semibold mb-8">
               <Zap className="w-4 h-4" />
-              16 AI-powered tools · Results in minutes
+              {AI_TOOL_COUNT_LABEL} · Results in minutes
             </div>
             <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-8 leading-[1.2] sm:leading-[1.18] lg:leading-[1.15]">
               Feel the pulse of your
@@ -134,7 +138,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="mt-3 text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
-              Every venture starts with a vibe. VentureVibe turns that spark into hard data — market sizing, competitor intel, SWOT, pricing models, and an investor-ready pitch deck, all powered by AI.
+              Every venture starts with a vibe. VentureVibe turns that spark into hard data — market sizing, competitor intel, financial projections, funding readiness, and an investor-ready pitch deck, all powered by AI.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/auth/signup">
@@ -167,10 +171,24 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <div className="inline-block px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider mb-4">Deep Analysis</div>
             <h2 className="font-display text-4xl font-bold mb-3">Go deeper than the surface</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Eight comprehensive analyses that reveal the full picture of your opportunity.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Eight deep-dive analyses that reveal the full picture of your opportunity.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {deepFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
+          </div>
+        </section>
+
+        {/* Investor Prep */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <div className="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wider mb-4">Investor Prep</div>
+            <h2 className="font-display text-4xl font-bold mb-3">Walk into meetings prepared</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Four tools founders reach for before investor conversations — financials, naming, readiness, and competitive position.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {investorPrepFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
           </div>
         </section>
 
@@ -181,8 +199,8 @@ export default function HomePage() {
             <h2 className="font-display text-4xl font-bold mb-3">From idea to investor-ready</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Tools to polish your idea, talk about it confidently, and pitch it like a pro.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {proFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {pitchFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
           </div>
         </section>
 
