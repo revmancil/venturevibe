@@ -9,17 +9,17 @@ import { DollarSign, RotateCcw, Info, Save, GitCompareArrows, Trash2, X } from '
 import {
   AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
+import {
+  buildPresets,
+  DEFAULT_BASELINE,
+  fmt,
+  PRESET_COLORS,
+  PRESET_NAMES,
+  runProjection,
+  type Params,
+} from '@/lib/revenue-projection';
 
 interface Range { min: number; max: number; step: number }
-interface Params {
-  pricePerCustomer: number;
-  monthlyVisitors: number;
-  visitorToSignupRate: number;
-  signupToPaidRate: number;
-  monthlyChurnRate: number;
-  variableCostPerCustomer: number;
-  monthlyFixedCosts: number;
-}
 interface RevenueSimData {
   businessModel?: string;
   baseline?: Params;
@@ -36,66 +36,12 @@ interface SavedScenario {
 
 interface Props { data: RevenueSimData }
 
-const fmt = (n: number) => {
-  if (!isFinite(n)) return '$0';
-  const abs = Math.abs(n);
-  if (abs >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
-  if (abs >= 1e3) return `$${(n / 1e3).toFixed(1)}K`;
-  return `$${Math.round(n).toLocaleString()}`;
-};
-
-function runProjection(p: Params) {
-  const newPaidPerMonth = p.monthlyVisitors * p.visitorToSignupRate * p.signupToPaidRate;
-  const rows: { month: string; customers: number; mrr: number; revenue: number; costs: number; profit: number; cumulativeProfit: number }[] = [];
-  let customers = 0;
-  let cumulativeProfit = 0;
-  for (let i = 1; i <= 24; i++) {
-    customers = customers * (1 - p.monthlyChurnRate) + newPaidPerMonth;
-    const mrr = customers * p.pricePerCustomer;
-    const revenue = mrr;
-    const costs = customers * p.variableCostPerCustomer + p.monthlyFixedCosts;
-    const profit = revenue - costs;
-    cumulativeProfit += profit;
-    rows.push({ month: `M${i}`, customers: Math.round(customers), mrr: Math.round(mrr), revenue: Math.round(revenue), costs: Math.round(costs), profit: Math.round(profit), cumulativeProfit: Math.round(cumulativeProfit) });
-  }
-  const last = rows[rows.length - 1];
-  const month12 = rows[11];
-  const breakevenMonth = rows.findIndex(r => r.profit >= 0);
-  return { rows, last, month12, breakevenMonth: breakevenMonth >= 0 ? breakevenMonth + 1 : null };
-}
-
 const SCENARIO_COLORS = ['#f59e0b', '#06b6d4', '#ec4899'];
-const PRESET_NAMES = ['Conservative', 'Base (AI)', 'Aggressive'] as const;
 
 export default function RevenueSimulator({ data }: Props) {
-  const b: Params = data?.baseline || {
-    pricePerCustomer: 29, monthlyVisitors: 2000, visitorToSignupRate: 0.05,
-    signupToPaidRate: 0.10, monthlyChurnRate: 0.05, variableCostPerCustomer: 3, monthlyFixedCosts: 500,
-  };
+  const b: Params = data?.baseline || DEFAULT_BASELINE;
   const ranges = data?.ranges || {};
-
-  // Derive presets from baseline
-  const presets: Record<string, Params> = useMemo(() => ({
-    'Conservative': {
-      pricePerCustomer: Math.round(b.pricePerCustomer * 0.8),
-      monthlyVisitors: Math.round(b.monthlyVisitors * 0.5),
-      visitorToSignupRate: Math.round(b.visitorToSignupRate * 0.7 * 1000) / 1000,
-      signupToPaidRate: Math.round(b.signupToPaidRate * 0.6 * 100) / 100,
-      monthlyChurnRate: Math.round(Math.min(b.monthlyChurnRate * 1.5, 0.25) * 1000) / 1000,
-      variableCostPerCustomer: Math.round(b.variableCostPerCustomer * 1.2),
-      monthlyFixedCosts: Math.round(b.monthlyFixedCosts * 1.3),
-    },
-    'Base (AI)': { ...b },
-    'Aggressive': {
-      pricePerCustomer: Math.round(b.pricePerCustomer * 1.3),
-      monthlyVisitors: Math.round(b.monthlyVisitors * 2),
-      visitorToSignupRate: Math.round(Math.min(b.visitorToSignupRate * 1.4, 0.28) * 1000) / 1000,
-      signupToPaidRate: Math.round(Math.min(b.signupToPaidRate * 1.5, 0.45) * 100) / 100,
-      monthlyChurnRate: Math.round(b.monthlyChurnRate * 0.6 * 1000) / 1000,
-      variableCostPerCustomer: Math.round(b.variableCostPerCustomer * 0.8),
-      monthlyFixedCosts: Math.round(b.monthlyFixedCosts * 0.9),
-    },
-  }), [b]);
+  const presets = useMemo(() => buildPresets(b), [b]);
 
   const [params, setParams] = useState<Params>({ ...b });
   const [activePreset, setActivePreset] = useState<string | null>('Base (AI)');
@@ -126,6 +72,26 @@ export default function RevenueSimulator({ data }: Props) {
   };
 
   const projection = useMemo(() => runProjection(params), [params]);
+
+  const presetScenarios = useMemo(
+    () =>
+      PRESET_NAMES.map((name) => ({
+        name,
+        color: PRESET_COLORS[name],
+        proj: runProjection(presets[name]),
+      })),
+    [presets]
+  );
+
+  const presetChartData = useMemo(() => {
+    return presetScenarios[0].proj.rows.map((row, i) => {
+      const point: Record<string, string | number> = { month: row.month };
+      presetScenarios.forEach((s) => {
+        point[s.name] = s.proj.rows[i].mrr;
+      });
+      return point;
+    });
+  }, [presetScenarios]);
 
   // Build comparison chart data
   const comparisonData = useMemo(() => {
@@ -224,6 +190,53 @@ export default function RevenueSimulator({ data }: Props) {
             ))}
           </div>
         )}
+      </div>
+
+      <div id="scenario-compare" className="mb-8 scroll-mt-24">
+        <h3 className="font-semibold mb-3 flex items-center gap-2">
+          <GitCompareArrows className="w-4 h-4" /> Scenario Compare — Conservative vs Base vs Aggressive
+        </h3>
+        <div className="h-72 w-full mb-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={presetChartData}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => fmt(v as number)} />
+              <Tooltip formatter={(v: number) => fmt(Number(v))} />
+              <Legend />
+              {presetScenarios.map((s) => (
+                <Line key={s.name} type="monotone" dataKey={s.name} stroke={s.color} strokeWidth={2} dot={false} />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-2 pr-4 font-semibold">Scenario</th>
+                <th className="text-right py-2 px-3 font-semibold">MRR (M12)</th>
+                <th className="text-right py-2 px-3 font-semibold">ARR (M12)</th>
+                <th className="text-right py-2 px-3 font-semibold">Customers (M24)</th>
+                <th className="text-right py-2 pl-3 font-semibold">Break-even</th>
+              </tr>
+            </thead>
+            <tbody>
+              {presetScenarios.map((s) => (
+                <tr key={s.name} className="border-b border-dashed">
+                  <td className="py-2 pr-4 flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: s.color }} />
+                    {s.name}
+                  </td>
+                  <td className="text-right py-2 px-3 font-mono">{fmt(s.proj.month12.mrr)}</td>
+                  <td className="text-right py-2 px-3 font-mono">{fmt(s.proj.month12.mrr * 12)}</td>
+                  <td className="text-right py-2 px-3 font-mono">{s.proj.last.customers.toLocaleString()}</td>
+                  <td className="text-right py-2 pl-3 font-mono">{s.proj.breakevenMonth ? `Month ${s.proj.breakevenMonth}` : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* KPI tiles */}

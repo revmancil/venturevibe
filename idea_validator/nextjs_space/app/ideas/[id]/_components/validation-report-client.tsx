@@ -11,7 +11,7 @@ import {
   ArrowLeft, Loader2, CheckCircle, BarChart3, TrendingUp, Crown, RefreshCw, Download,
   Target, Shield, DollarSign, Rocket, Layers, Users, LayoutGrid, AlertTriangle,
   Sparkles, Mic, Presentation, MessageCircle, Radio,
-  LineChart, Globe, Banknote, Map,
+  LineChart, Globe, Banknote, Map, GitCompareArrows,
 } from 'lucide-react';
 import SurveyResults from './survey-results';
 import CompetitorAnalysis from './competitor-analysis';
@@ -48,8 +48,24 @@ interface Idea {
 }
 
 type AnalysisType =
-  | 'survey' | 'competitors' | 'market' | 'score' | 'swot' | 'pricing' | 'gtm' | 'mvp' | 'personas' | 'canvas' | 'risks' | 'refinement' | 'elevator-pitch' | 'pitch-deck' | 'revenue-sim' | 'market-signals'
+  | 'survey' | 'competitors' | 'market' | 'score' | 'swot' | 'pricing' | 'gtm' | 'mvp' | 'personas' | 'canvas' | 'risks' | 'refinement' | 'elevator-pitch' | 'pitch-deck' | 'revenue-sim' | 'scenario-compare' | 'market-signals'
   | 'financial-projections' | 'name-checker' | 'funding-readiness' | 'positioning-map';
+
+type AnalysisCard = {
+  type: AnalysisType;
+  label: string;
+  desc: string;
+  icon: React.ReactNode;
+  iconBg: string;
+  btnColor: string;
+  endpoint: string;
+  successMsg: string;
+  hasData: boolean;
+  genLabel: string;
+  regenLabel: string;
+  loadingLabel: string;
+  scrollToId?: string;
+};
 
 interface ValidationReportClientProps {
   idea: Idea;
@@ -171,6 +187,9 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
       }
       toast.success(successMsg);
       await refreshIdea();
+      if (type === 'scenario-compare') {
+        setTimeout(() => scrollToSection('scenario-compare'), 400);
+      }
     } catch (error) {
       console.error(error);
       toast.error(`Failed to generate ${type} analysis`);
@@ -383,6 +402,21 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
       loadingLabel: 'Modeling...',
     },
     {
+      type: 'scenario-compare' as AnalysisType,
+      label: 'Scenario Compare',
+      desc: 'Compare Conservative, Base, and Aggressive financial scenarios side-by-side',
+      icon: <GitCompareArrows className="w-5 h-5 text-cyan-600" />,
+      iconBg: 'bg-cyan-100',
+      btnColor: 'bg-cyan-500 hover:bg-cyan-600',
+      endpoint: 'revenue-sim',
+      successMsg: 'Scenario comparison ready!',
+      hasData: !!report?.revenueSimData,
+      genLabel: 'Build Comparison',
+      regenLabel: 'Rebuild',
+      loadingLabel: 'Modeling...',
+      scrollToId: 'scenario-compare',
+    },
+    {
       type: 'market-signals' as AnalysisType,
       label: 'Live Market Signals',
       desc: 'Real-time trends, search interest, funding, and recent moves',
@@ -471,12 +505,29 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
     },
   ];
 
-  const renderAnalysisButton = (a: typeof coreAnalyses[0], size?: 'sm' | 'default') => {
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const renderAnalysisButton = (a: AnalysisCard, size?: 'sm' | 'default') => {
     const isLoading = loadingAnalysis === a.type;
     if (isLoading) {
       return (
         <Button disabled className="w-full" size={size}>
           <Loader2 className="w-4 h-4 mr-2 animate-spin" />{a.loadingLabel}
+        </Button>
+      );
+    }
+    if (a.hasData && a.scrollToId) {
+      return (
+        <Button
+          onClick={() => scrollToSection(a.scrollToId!)}
+          variant="outline"
+          className="w-full"
+          size={size}
+          disabled={!!loadingAnalysis}
+        >
+          View comparison
         </Button>
       );
     }
