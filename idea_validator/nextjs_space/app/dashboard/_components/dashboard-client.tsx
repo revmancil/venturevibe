@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ChevronRight, LogOut, Plus, Lightbulb, Crown, Zap, CreditCard, Trash2, Loader2 } from 'lucide-react';
+import { ChevronRight, LogOut, Plus, Crown, Zap, CreditCard, Trash2, Loader2 } from 'lucide-react';
+import { VentureVibeLogo } from '@/components/brand/venturevibe-logo';
 import IdeaSubmissionForm from '@/components/features/idea-submission-form';
 import {
   AlertDialog,
@@ -121,12 +122,7 @@ export default function DashboardClient({ ideas: initialIdeas }: DashboardClient
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <header className="sticky top-0 z-50 border-b border-border/40 bg-white/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-gradient-to-br from-violet-500 to-emerald-500 rounded-lg">
-              <Lightbulb className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display text-xl font-bold">VentureVibe</span>
-          </div>
+          <VentureVibeLogo size="sm" href="/dashboard" />
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{session?.user?.name}</span>
             <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
@@ -234,7 +230,7 @@ export default function DashboardClient({ ideas: initialIdeas }: DashboardClient
             ))
           ) : (
             <Card className="col-span-full p-12 text-center border border-dashed border-border/50">
-              <Lightbulb className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+              <VentureVibeLogo size="md" href={null} className="mx-auto mb-4 opacity-40" />
               <h3 className="font-semibold text-lg mb-2">No ideas yet</h3>
               <p className="text-muted-foreground mb-6">Start by submitting your first business idea for validation</p>
               <Button onClick={() => setShowForm(true)} className="bg-gradient-to-r from-violet-500 to-emerald-500">

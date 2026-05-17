@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { LogIn } from "lucide-react";
+import { VentureVibeLogo } from "@/components/brand/venturevibe-logo";
 import { DemoLoginPanel } from "@/components/auth/demo-login-panel";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { normalizeEmail } from "@/lib/normalize-email";
@@ -56,9 +56,7 @@ export default function LoginPage() {
     <Card className="border border-border/50 shadow-lg">
       <CardHeader className="space-y-2 text-center">
         <div className="flex justify-center mb-2">
-          <div className="p-3 bg-gradient-to-br from-violet-500 to-emerald-500 rounded-lg">
-            <LogIn className="w-6 h-6 text-white" />
-          </div>
+          <VentureVibeLogo size="md" href={null} />
         </div>
         <CardTitle className="text-2xl">Welcome back</CardTitle>
         <CardDescription>Sign in to your VentureVibe account</CardDescription>

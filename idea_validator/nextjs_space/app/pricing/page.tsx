@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, Lightbulb, ArrowLeft, Loader2, Crown, Sparkles } from 'lucide-react';
+import { Check, ArrowLeft, Loader2, Crown, Sparkles } from 'lucide-react';
+import { VentureVibeLogo } from '@/components/brand/venturevibe-logo';
 import { toast } from 'sonner';
 import { PLANS } from '@/lib/plans';
 
@@ -68,12 +69,7 @@ export default function PricingPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <header className="sticky top-0 z-50 border-b border-border/40 bg-white/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="p-2 bg-gradient-to-br from-violet-500 to-emerald-500 rounded-lg">
-              <Lightbulb className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display text-xl font-bold">VentureVibe</span>
-          </Link>
+          <VentureVibeLogo size="sm" href="/" />
           <div className="flex gap-3">
             {session ? (
               <Link href="/dashboard">

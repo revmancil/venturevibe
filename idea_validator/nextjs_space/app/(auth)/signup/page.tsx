@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight } from "lucide-react";
+import { VentureVibeLogo } from "@/components/brand/venturevibe-logo";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { normalizeEmail } from "@/lib/normalize-email";
 
@@ -106,9 +107,7 @@ export default function SignupPage() {
     <Card className="border border-border/50 shadow-lg">
       <CardHeader className="space-y-2 text-center">
         <div className="flex justify-center mb-2">
-          <div className="p-3 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-lg">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>
+          <VentureVibeLogo size="md" href={null} />
         </div>
         <CardTitle className="text-2xl">Start validating ideas</CardTitle>
         <CardDescription>Create your VentureVibe account to begin</CardDescription>

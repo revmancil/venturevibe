@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   applicationName: "VentureVibe",
   category: "Business",
   icons: {
-    icon: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
   alternates: {
     canonical: "/",
@@ -112,7 +112,7 @@ const jsonLd = {
       "@id": `${siteUrl}#organization`,
       name: "VentureVibe",
       url: siteUrl,
-      logo: `${siteUrl}/favicon.svg`,
+      logo: `${siteUrl}/logo.png`,
       description:
         "AI-powered business idea validation platform that helps entrepreneurs validate startup ideas in 48 hours.",
     },
