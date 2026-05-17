@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma";
 import bcryptjs from "bcryptjs";
 import { DEMO_TEST_EMAIL, DEMO_TEST_PASSWORD } from "../lib/demo-auth";
+import { ensureDemoSubscription } from "../lib/demo-subscription";
 
 async function main() {
   const hashedPassword = await bcryptjs.hash(DEMO_TEST_PASSWORD, 10);
@@ -18,7 +19,9 @@ async function main() {
     },
   });
 
-  console.log("Demo user ready:", demo.email, "(password in lib/demo-auth.ts)");
+  await ensureDemoSubscription(demo.id);
+
+  console.log("Demo user ready:", demo.email, "(Business plan, password in lib/demo-auth.ts)");
 }
 
 main()

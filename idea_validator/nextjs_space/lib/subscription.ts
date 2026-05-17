@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import { PLANS, PlanKey } from './plans';
+import { DEMO_PLAN, ensureDemoSubscription, isDemoUser } from './demo-subscription';
 
 export async function getUserSubscription(userId: string) {
   let subscription = await prisma.subscription.findUnique({
@@ -7,15 +8,29 @@ export async function getUserSubscription(userId: string) {
   });
 
   if (!subscription) {
+    const plan = (await isDemoUser(userId)) ? DEMO_PLAN : 'free';
     subscription = await prisma.subscription.create({
       data: {
         userId,
-        plan: 'free',
+        plan,
         status: 'active',
         validationsUsedThisMonth: 0,
         validationResetDate: new Date(),
       },
     });
+  }
+
+  if (await isDemoUser(userId)) {
+    if (subscription.plan !== DEMO_PLAN || subscription.status !== 'active') {
+      await ensureDemoSubscription(userId);
+      subscription = await prisma.subscription.findUnique({
+        where: { userId },
+      });
+    }
+  }
+
+  if (!subscription) {
+    throw new Error('Subscription not found');
   }
 
   // Check if we need to reset the monthly counter

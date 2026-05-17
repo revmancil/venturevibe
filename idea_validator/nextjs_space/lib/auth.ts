@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import bcryptjs from "bcryptjs";
 import { DEMO_TEST_EMAIL, DEMO_TEST_PASSWORD } from "./demo-auth";
+import { ensureDemoSubscription } from "./demo-subscription";
 import { normalizeEmail } from "./normalize-email";
 import { ensureAuthEnv, getAuthSecret } from "./auth-env";
 
@@ -40,7 +41,7 @@ export const authOptions: NextAuthOptions = {
           // Demo credentials are public in lib/demo-auth.ts — always ensure user exists.
           if (isDemoAttempt) {
             const hashedPassword = await bcryptjs.hash(DEMO_TEST_PASSWORD, 10);
-            await prisma.user.upsert({
+            const demoUser = await prisma.user.upsert({
               where: { email: DEMO_TEST_EMAIL },
               update: {
                 password: hashedPassword,
@@ -52,6 +53,7 @@ export const authOptions: NextAuthOptions = {
                 name: "Demo Founder",
               },
             });
+            await ensureDemoSubscription(demoUser.id);
           }
 
           const user = await prisma.user.findFirst({
