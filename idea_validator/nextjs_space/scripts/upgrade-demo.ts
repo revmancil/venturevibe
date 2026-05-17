@@ -10,10 +10,10 @@ async function main() {
 
   const sub = await prisma.subscription.upsert({
     where: { userId: user.id },
-    update: { plan: "pro", status: "active" },
+    update: { plan: "business", status: "active" },
     create: {
       userId: user.id,
-      plan: "pro",
+      plan: "business",
       status: "active",
     },
   });
