@@ -101,11 +101,8 @@ export default function HomePage() {
         {/* Header */}
         <header className="sticky top-0 z-50 border-b border-border/40 bg-white/80 backdrop-blur-sm">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-br from-violet-500 to-emerald-500 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-display text-xl font-bold text-foreground">VentureVibe</span>
+            <div className="flex items-center">
+              <img src="/logo.png" alt="VentureVibe" className="h-10 w-auto" />
             </div>
             <div className="flex gap-3">
               <Link href="/pricing"><Button variant="ghost">Pricing</Button></Link>
@@ -220,9 +217,8 @@ export default function HomePage() {
         <footer className="border-t border-border/40 py-12">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-violet-600" />
-                <span className="font-semibold">VentureVibe</span>
+              <div className="flex items-center">
+                <img src="/logo.png" alt="VentureVibe" className="h-8 w-auto" />
               </div>
               <p className="text-sm text-muted-foreground">© 2026 VentureVibe. Feel the pulse of your next big idea.</p>
             </div>
