@@ -122,7 +122,7 @@ export default function DashboardClient({ ideas: initialIdeas }: DashboardClient
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <header className="sticky top-0 z-50 border-b border-border/40 bg-white/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <VentureVibeLogo size="sm" href="/dashboard" />
+          <VentureVibeLogo size="md" href="/dashboard" />
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{session?.user?.name}</span>
             <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>

@@ -106,7 +106,7 @@ export default function HomePage() {
         {/* Header */}
         <header className="sticky top-0 z-50 border-b border-border/40 bg-white/80 backdrop-blur-sm">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-            <VentureVibeLogo size="sm" priority />
+            <VentureVibeLogo size="md" priority />
             <div className="flex gap-3">
               <Link href="/pricing"><Button variant="ghost">Pricing</Button></Link>
               <Link href="/auth/login"><Button variant="outline">Sign in</Button></Link>
@@ -120,6 +120,9 @@ export default function HomePage() {
         {/* Hero */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
           <div className="max-w-4xl mx-auto text-center">
+            <div className="flex justify-center mb-8">
+              <VentureVibeLogo size="hero" href={null} priority className="drop-shadow-md" />
+            </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm font-semibold mb-8">
               <Zap className="w-4 h-4" />
               16 AI-powered tools · Results in minutes
@@ -201,7 +204,7 @@ export default function HomePage() {
         <footer className="border-t border-border/40 py-12">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
-              <VentureVibeLogo size="sm" href={null} />
+              <VentureVibeLogo size="md" href={null} />
               <p className="text-sm text-muted-foreground">© 2026 VentureVibe. Feel the pulse of your next big idea.</p>
             </div>
           </div>

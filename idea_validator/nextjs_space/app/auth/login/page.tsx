@@ -56,7 +56,7 @@ export default function LoginPage() {
     <Card className="border border-border/50 shadow-lg">
       <CardHeader className="space-y-2 text-center">
         <div className="flex justify-center mb-2">
-          <VentureVibeLogo size="md" href={null} />
+          <VentureVibeLogo size="lg" href={null} />
         </div>
         <CardTitle className="text-2xl">Welcome back</CardTitle>
         <CardDescription>Sign in to your VentureVibe account</CardDescription>
