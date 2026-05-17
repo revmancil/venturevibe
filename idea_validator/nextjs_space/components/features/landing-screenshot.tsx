@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { hasLandingScreenshot } from "@/lib/landing-screenshots";
 
 const accentByColor: Record<string, { ring: string; label: string }> = {
   blue: { ring: "ring-blue-200/80", label: "text-blue-600/90" },
@@ -41,9 +40,8 @@ export function LandingScreenshot({
   color: string;
 }) {
   const accent = accentByColor[color] || accentByColor.blue;
-  const assetExists = hasLandingScreenshot(slug);
-  const src = assetExists ? `/landing/screenshots/${slug}.png` : "";
-  const [imgStatus, setImgStatus] = useState<ImgStatus>(assetExists ? "loading" : "error");
+  const src = `/landing/screenshots/${slug}.png`;
+  const [imgStatus, setImgStatus] = useState<ImgStatus>("loading");
   const [open, setOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -56,8 +54,8 @@ export function LandingScreenshot({
 
   // Cached images can finish before onLoad is attached; check .complete after mount.
   useEffect(() => {
-    if (assetExists) syncImgStatus();
-  }, [assetExists, src, syncImgStatus]);
+    syncImgStatus();
+  }, [src, syncImgStatus]);
 
   const canOpen = imgStatus === "loaded" || imgStatus === "error";
 
@@ -81,21 +79,19 @@ export function LandingScreenshot({
         }
       >
         <div className="relative aspect-[5/3] max-h-40 w-full sm:max-h-44">
-          {assetExists ? (
-            // eslint-disable-next-line @next/next/no-img-element -- public path
-            <img
-              ref={imgRef}
-              src={src}
-              alt=""
-              decoding="async"
-              className={cn(
-                "absolute inset-0 z-[1] h-full w-full object-cover object-top transition-opacity duration-300",
-                imgStatus === "loaded" ? "opacity-100" : "opacity-0"
-              )}
-              onLoad={() => setImgStatus("loaded")}
-              onError={() => setImgStatus("error")}
-            />
-          ) : null}
+          {/* eslint-disable-next-line @next/next/no-img-element -- public path; placeholder on 404 */}
+          <img
+            ref={imgRef}
+            src={src}
+            alt=""
+            decoding="async"
+            className={cn(
+              "absolute inset-0 z-[1] h-full w-full object-cover object-top transition-opacity duration-300",
+              imgStatus === "loaded" ? "opacity-100" : "opacity-0"
+            )}
+            onLoad={() => setImgStatus("loaded")}
+            onError={() => setImgStatus("error")}
+          />
           <div
             className={cn(
               "absolute inset-0 z-[2] flex flex-col items-center justify-center gap-1 p-3 text-center transition-opacity duration-300",
