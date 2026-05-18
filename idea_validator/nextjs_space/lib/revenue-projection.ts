@@ -9,6 +9,7 @@ export interface Params {
 }
 
 export const PRESET_NAMES = ['Conservative', 'Base (AI)', 'Aggressive'] as const;
+export type PresetName = (typeof PRESET_NAMES)[number];
 
 export const PRESET_COLORS: Record<(typeof PRESET_NAMES)[number], string> = {
   Conservative: '#f59e0b',

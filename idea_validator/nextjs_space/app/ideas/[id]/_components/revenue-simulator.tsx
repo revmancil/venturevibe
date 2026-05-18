@@ -17,6 +17,7 @@ import {
   PRESET_NAMES,
   runProjection,
   type Params,
+  type PresetName,
 } from '@/lib/revenue-projection';
 
 interface Range { min: number; max: number; step: number }
@@ -44,7 +45,7 @@ export default function RevenueSimulator({ data }: Props) {
   const presets = useMemo(() => buildPresets(b), [b]);
 
   const [params, setParams] = useState<Params>({ ...b });
-  const [activePreset, setActivePreset] = useState<string | null>('Base (AI)');
+  const [activePreset, setActivePreset] = useState<PresetName | null>('Base (AI)');
   const [savedScenarios, setSavedScenarios] = useState<SavedScenario[]>([]);
   const [showCompare, setShowCompare] = useState(false);
 
@@ -53,7 +54,7 @@ export default function RevenueSimulator({ data }: Props) {
     setActivePreset(null);
   }, []);
 
-  const applyPreset = (name: string) => {
+  const applyPreset = (name: PresetName) => {
     setParams({ ...presets[name] });
     setActivePreset(name);
   };
