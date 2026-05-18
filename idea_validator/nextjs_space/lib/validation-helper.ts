@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getLlmApiKey, getLlmChatCompletionsUrl, getLlmModel } from "@/lib/llm-config";
+import { isCoreValidationField, refreshIdeaValidationStatus } from "@/lib/idea-validation-status";
 
 export interface ValidationHandlerOptions {
   fieldName: string;
@@ -94,6 +95,11 @@ export async function handleValidationRequest(
                   });
                   if (options.afterSave) {
                     await options.afterSave(ideaId, parsed).catch(e => console.error('afterSave error:', e));
+                  }
+                  if (isCoreValidationField(fieldName)) {
+                    await refreshIdeaValidationStatus(ideaId).catch((e) =>
+                      console.error("refreshIdeaValidationStatus error:", e)
+                    );
                   }
                 } catch (e) {
                   console.error(`Error parsing/saving ${fieldName}:`, e);

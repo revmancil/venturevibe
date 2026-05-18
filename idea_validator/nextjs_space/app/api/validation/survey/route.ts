@@ -4,6 +4,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canUserValidate, incrementValidationCount } from "@/lib/subscription";
 import { getLlmApiKey, getLlmChatCompletionsUrl, getLlmModel } from "@/lib/llm-config";
+import {
+  markValidationStarted,
+  refreshIdeaValidationStatus,
+} from "@/lib/idea-validation-status";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +41,8 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    await markValidationStarted(ideaId);
 
     // Check if this is a new validation (no existing report with survey data)
     const existingReport = await prisma.validationReport.findUnique({
@@ -143,6 +149,7 @@ Respond with ONLY valid JSON, no additional text.`;
                       update: { surveyData },
                       create: { ideaId, surveyData },
                     });
+                    await refreshIdeaValidationStatus(ideaId);
                   } catch (e) {
                     console.error('Error parsing/saving survey data:', e);
                   }

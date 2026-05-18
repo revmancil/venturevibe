@@ -3,6 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getLlmApiKey, getLlmChatCompletionsUrl, getLlmModel } from "@/lib/llm-config";
+import {
+  markValidationStarted,
+  refreshIdeaValidationStatus,
+} from "@/lib/idea-validation-status";
 
 export const dynamic = "force-dynamic";
 
@@ -131,6 +135,7 @@ Respond with ONLY valid JSON, no additional text.`;
                       update: { competitorData },
                       create: { ideaId, competitorData },
                     });
+                    await refreshIdeaValidationStatus(ideaId);
                   } catch (e) {
                     console.error('Error parsing/saving competitor data:', e);
                   }

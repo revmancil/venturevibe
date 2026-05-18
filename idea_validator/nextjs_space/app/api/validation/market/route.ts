@@ -3,6 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getLlmApiKey, getLlmChatCompletionsUrl, getLlmModel } from "@/lib/llm-config";
+import {
+  markValidationStarted,
+  refreshIdeaValidationStatus,
+} from "@/lib/idea-validation-status";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +40,8 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    await markValidationStarted(ideaId);
 
     const prompt = `Estimate market size for this business idea:
 
@@ -133,6 +139,7 @@ Provide realistic estimates based on industry data. Respond with ONLY valid JSON
                       update: { marketData },
                       create: { ideaId, marketData },
                     });
+                    await refreshIdeaValidationStatus(ideaId);
                   } catch (e) {
                     console.error('Error parsing/saving market data:', e);
                   }
