@@ -84,9 +84,8 @@ const pitchFeatures = [
   { slug: "pitch-deck", color: "indigo", title: "Pitch Deck", desc: "10-slide investor pitch deck with PDF export" },
   { slug: "idea-coach", color: "emerald", title: "AI Idea Coach", desc: "Chat with an AI mentor that knows your idea inside-out" },
   { slug: "pdf-report", color: "blue", title: "Full PDF Report", desc: "Download a comprehensive PDF of all your validation data" },
-  { slug: "revenue-simulator", color: "emerald", title: "Revenue Simulator", desc: "Interactive 24-month projections with Conservative/Base/Aggressive presets" },
+  { slug: "revenue-simulator", color: "emerald", title: "Revenue Simulator", desc: "24-month projections with sliders, preset scenario compare, and save up to 3 custom scenarios" },
   { slug: "market-signals", color: "rose", title: "Live Market Signals", desc: "Real-time trends, search interest, funding activity with history timeline" },
-  { slug: "scenario-compare", color: "cyan", title: "Scenario Compare", desc: "Save & compare up to 3 financial scenarios side-by-side" },
 ];
 
 function FeatureCard({ slug, color, title, desc }: { slug: string; color: string; title: string; desc: string }) {

@@ -127,7 +127,7 @@ export default function RevenueSimulator({ data }: Props) {
           </div>
           <div>
             <h2 className="font-display text-2xl font-bold">Revenue Simulator</h2>
-            <p className="text-sm text-muted-foreground">Interactive 24-month financial projection</p>
+            <p className="text-sm text-muted-foreground">24-month projections, preset scenario compare, and custom save/compare</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
