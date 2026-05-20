@@ -220,9 +220,18 @@ export default function HomePage() {
         {/* Footer */}
         <footer className="border-t border-border/40 py-12">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
               <VentureVibeLogo size="md" href={null} />
-              <p className="text-sm text-muted-foreground">© 2026 VentureVibe. Feel the pulse of your next big idea.</p>
+              <p className="text-center text-sm text-muted-foreground sm:text-right">
+                © 2026 VentureVibe. Feel the pulse of your next big idea.{" "}
+                <Link href="/terms" className="hover:underline">
+                  Terms
+                </Link>
+                {" · "}
+                <Link href="/privacy" className="hover:underline">
+                  Privacy
+                </Link>
+              </p>
             </div>
           </div>
         </footer>
