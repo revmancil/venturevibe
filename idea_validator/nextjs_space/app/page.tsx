@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { LandingScreenshot } from "@/components/features/landing-screenshot";
 import { Zap, ArrowRight } from "lucide-react";
 import { VentureVibeLogo } from "@/components/brand/venturevibe-logo";
+import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { AI_TOOL_COUNT, AI_TOOL_COUNT_LABEL, AI_TOOLS_SUMMARY } from "@/lib/marketing";
 
 export const metadata: Metadata = {
@@ -78,6 +79,24 @@ const investorPrepFeatures = [
   { slug: "positioning-map", color: "cyan", title: "Competitive Positioning Map", desc: "Visual 2×2 map placing your startup vs competitors on key dimensions" },
 ];
 
+const founderPersonas = [
+  {
+    emoji: "🌙",
+    title: "The Side Hustler",
+    desc: "Testing ideas before quitting your day job",
+  },
+  {
+    emoji: "🚀",
+    title: "The Serial Founder",
+    desc: "Validating fast before committing a team",
+  },
+  {
+    emoji: "🏢",
+    title: "The Agency",
+    desc: "Running validation for multiple clients at once",
+  },
+];
+
 const pitchFeatures = [
   { slug: "idea-refinement", color: "pink", title: "Idea Refinement", desc: "AI suggestions to sharpen and improve your idea" },
   { slug: "elevator-pitches", color: "violet", title: "Elevator Pitches", desc: "Multiple pitch versions for different audiences" },
@@ -93,6 +112,18 @@ function FeatureCard({ slug, color, title, desc }: { slug: string; color: string
     <Card className="overflow-hidden border border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <LandingScreenshot slug={slug} title={title} color={color} />
       <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
+    </Card>
+  );
+}
+
+function PersonaCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
+  return (
+    <Card className="border border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+      <div className="mb-4 text-3xl" aria-hidden>
+        {emoji}
+      </div>
+      <h3 className="mb-2 text-lg font-bold">{title}</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
     </Card>
   );
@@ -150,6 +181,7 @@ export default function HomePage() {
                 <Button size="lg" variant="outline" className="text-base px-8 py-6">View pricing</Button>
               </Link>
             </div>
+            <SocialProofBar className="mt-12" />
           </div>
         </section>
 
@@ -200,6 +232,18 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {pitchFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
+          </div>
+        </section>
+
+        {/* Founder personas */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-4xl font-bold mb-3">Built for founders who move fast</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {founderPersonas.map((persona) => (
+              <PersonaCard key={persona.title} {...persona} />
+            ))}
           </div>
         </section>
 
