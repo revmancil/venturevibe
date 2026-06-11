@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth';
 import { getStripe } from '@/lib/stripe';
 import { getUserSubscription } from '@/lib/subscription';
 import { prisma } from '@/lib/prisma';
+import { getSiteUrl } from '@/lib/site-url';
 
 const PRICE_IDS: Record<string, { envKey: string; value: string }> = {
   pro: { envKey: 'STRIPE_PRO_PRICE_ID', value: process.env.STRIPE_PRO_PRICE_ID?.trim() || '' },
@@ -47,10 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     const subscription = await getUserSubscription(session.user.id);
-    const origin =
-      request.headers.get('origin') ||
-      process.env.NEXTAUTH_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
+    const origin = request.headers.get('origin') || getSiteUrl();
 
     let customerId = subscription.stripeCustomerId;
 

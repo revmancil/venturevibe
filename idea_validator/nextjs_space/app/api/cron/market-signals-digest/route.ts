@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAbacusDeploymentToken } from '@/lib/llm-config';
-import { getFallbackSiteUrl } from '@/lib/site-url';
+import { getSiteUrl } from '@/lib/site-url';
 
 async function sendDigestEmail(params: {
   useResend: boolean;
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
     }
 
     let sent = 0;
-    const appUrl = process.env.NEXTAUTH_URL || getFallbackSiteUrl();
+    const appUrl = getSiteUrl();
     const appName = appUrl ? new URL(appUrl).hostname.split('.')[0] : 'VentureVibe';
 
     for (const [userId, userData] of Object.entries(userIdeas)) {

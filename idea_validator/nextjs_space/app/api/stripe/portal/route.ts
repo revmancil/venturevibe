@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getStripe } from '@/lib/stripe';
 import { getUserSubscription } from '@/lib/subscription';
+import { getSiteUrl } from '@/lib/site-url';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No billing account found' }, { status: 400 });
     }
 
-    const origin = request.headers.get('origin') || process.env.NEXTAUTH_URL || '';
+    const origin = request.headers.get('origin') || getSiteUrl();
 
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,

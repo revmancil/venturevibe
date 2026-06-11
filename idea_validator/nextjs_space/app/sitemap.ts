@@ -1,16 +1,10 @@
 import type { MetadataRoute } from "next";
-import { headers } from "next/headers";
-import { getFallbackSiteUrl } from "@/lib/site-url";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const host = headers().get("x-forwarded-host") || headers().get("host");
-  const proto = headers().get("x-forwarded-proto") || "https";
-  const baseUrl = host
-    ? `${proto}://${host}`
-    : process.env.NEXTAUTH_URL || getFallbackSiteUrl();
-
+  const baseUrl = getSiteUrl();
   const now = new Date();
 
   return [

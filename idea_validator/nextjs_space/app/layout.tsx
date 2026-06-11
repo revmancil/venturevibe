@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
-import { getFallbackSiteUrl } from "@/lib/site-url";
+import { getSiteUrl } from "@/lib/site-url";
 import { AI_TOOL_COUNT, AI_TOOLS_SUMMARY } from "@/lib/marketing";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXTAUTH_URL || getFallbackSiteUrl();
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

@@ -18,7 +18,7 @@ function Get-DotEnvValue([string]$name) {
   return $value
 }
 
-$vars = @("DATABASE_URL", "NEXTAUTH_URL", "NEXTAUTH_SECRET")
+$vars = @("DATABASE_URL", "NEXTAUTH_URL", "NEXTAUTH_SECRET", "SITE_URL")
 $targets = @("production", "preview")
 
 foreach ($name in $vars) {
@@ -41,7 +41,7 @@ foreach ($name in $vars) {
 }
 
 Write-Host ""
-Write-Host "Production URL should be like: https://venturevibe-revmancils-projects.vercel.app"
+Write-Host "Production NEXTAUTH_URL / SITE_URL should be: https://www.venturevibe.pro"
 Write-Host "DATABASE_URL should be Supabase POOLER URI (Connect -> Session pooler), not direct db host."
 
 Write-Host "Done. Redeploy: vercel --prod"

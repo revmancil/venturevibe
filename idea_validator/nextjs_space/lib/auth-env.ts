@@ -1,12 +1,18 @@
+import { getSiteUrl } from "./site-url";
+
 function isLocalhostUrl(url: string | undefined): boolean {
   if (!url) return false;
   return /localhost|127\.0\.0\.1/i.test(url);
 }
 
-/** On Vercel, ignore localhost NEXTAUTH_URL from a copied local .env. */
+/** Resolve NEXTAUTH_URL; on Vercel production, use the canonical custom domain. */
 export function resolveNextAuthUrl(): string | undefined {
   const configured = process.env.NEXTAUTH_URL?.trim();
   const onVercel = process.env.VERCEL === "1";
+
+  if (process.env.VERCEL_ENV === "production") {
+    return getSiteUrl();
+  }
 
   if (onVercel && isLocalhostUrl(configured) && process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
@@ -39,9 +45,5 @@ export function getAuthSecret(): string | undefined {
 }
 
 export function getAuthBaseUrl(): string {
-  const raw =
-    resolveNextAuthUrl() ||
-    process.env.SITE_URL ||
-    "http://localhost:3000";
-  return raw.replace(/\/+$/, "");
+  return getSiteUrl();
 }
