@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { ChevronRight, LogOut, Plus, Crown, Zap, CreditCard, Trash2, Loader2 } from 'lucide-react';
 import { VentureVibeLogo } from '@/components/brand/venturevibe-logo';
 import IdeaSubmissionForm from '@/components/features/idea-submission-form';
+import { ValidationCounter, getValidationCounterText } from '@/components/dashboard/validation-counter';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -124,6 +125,7 @@ export default function DashboardClient({ ideas: initialIdeas }: DashboardClient
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <VentureVibeLogo size="md" href="/dashboard" />
           <div className="flex items-center gap-4">
+            {subscription && <ValidationCounter subscription={subscription} />}
             <span className="text-sm text-muted-foreground">{session?.user?.name}</span>
             <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>
               <LogOut className="w-4 h-4 mr-2" />
@@ -160,9 +162,7 @@ export default function DashboardClient({ ideas: initialIdeas }: DashboardClient
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {subscription.validationsLimit === -1
-                      ? `${subscription.validationsUsed} validations used this month (unlimited)`
-                      : `${subscription.validationsUsed} of ${subscription.validationsLimit} validations used this month`}
+                    {getValidationCounterText(subscription)}
                   </p>
                 </div>
               </div>

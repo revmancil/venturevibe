@@ -9,9 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Check, ArrowLeft, Loader2, Crown, Sparkles } from 'lucide-react';
 import { VentureVibeLogo } from '@/components/brand/venturevibe-logo';
 import { toast } from 'sonner';
-import { PLANS } from '@/lib/plans';
+import { PLANS, type PlanKey } from '@/lib/plans';
 import { AI_TOOL_COUNT_LABEL } from '@/lib/marketing';
 import { FREE_TRIAL_TOOLS, signupTrialUrl } from '@/lib/pricing-trials';
+import { PlanToolSections } from '@/components/pricing/plan-tool-sections';
 
 export default function PricingPage() {
   const { data: session, status } = useSession();
@@ -155,27 +156,25 @@ export default function PricingPage() {
                       ? 'For serious entrepreneurs'
                       : 'For teams & agencies'}
                   </p>
+                  <p className="mt-3 text-sm font-medium text-foreground">{plan.features[0]}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    One validation = one idea, full tool suite, saved permanently.
+                  </p>
                 </div>
 
-                <ul className="space-y-3 mb-8 flex-1">
-                  {plan.features.map((feature, i) => {
-                    const isSeparator = feature.toLowerCase().startsWith('everything in');
-                    return (
-                      <li key={i} className={`flex items-start gap-2 text-sm ${isSeparator ? 'pt-1 pb-1' : ''}`}>
-                        {isSeparator ? (
-                          <span className="font-semibold text-purple-600">{feature}</span>
-                        ) : (
-                          <>
-                            <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                            <span>{feature}</span>
-                          </>
-                        )}
+                <div className="mb-8 flex-1 space-y-5">
+                  <PlanToolSections planKey={key as PlanKey} />
+                  {(key === 'pro' || key === 'business') && (
+                    <ul className="space-y-2">
+                      <li className="flex items-start gap-2 text-sm">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                        <span>Priority processing</span>
                       </li>
-                    );
-                  })}
+                    </ul>
+                  )}
                   {key === 'free' &&
                     FREE_TRIAL_TOOLS.map((tool) => (
-                      <li key={tool.id} className="text-sm">
+                      <div key={tool.id} className="text-sm">
                         <div className="flex items-start gap-2">
                           <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
                           <span>{tool.label}</span>
@@ -186,9 +185,9 @@ export default function PricingPage() {
                         >
                           Try once free →
                         </Link>
-                      </li>
+                      </div>
                     ))}
-                </ul>
+                </div>
 
                 {key === 'free' ? (
                   <Link href={session ? '/dashboard' : '/auth/signup'}>

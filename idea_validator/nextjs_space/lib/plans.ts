@@ -2,20 +2,23 @@ export const PLANS = {
   free: {
     name: 'Free',
     price: 0,
-    validationsPerMonth: 2,
+    validationsPerMonth: 1, // 1 lifetime validation, not recurring
     features: [
-      '2 idea validations per month',
+      '1 free idea validation (lifetime)',
       'Micro-survey generation',
       'Basic competitor analysis',
       'Basic market sizing',
+      'Validation score & recommendations',
+      'SWOT analysis',
+      'Customer personas',
     ],
   },
   pro: {
     name: 'Pro',
     price: 29,
-    validationsPerMonth: 15,
+    validationsPerMonth: 5,
     features: [
-      '15 idea validations per month',
+      '5 idea validations per month',
       'Advanced survey generation',
       'Detailed competitor analysis',
       'Comprehensive market sizing',
@@ -27,6 +30,7 @@ export const PLANS = {
       'Customer personas',
       'Business model canvas',
       'Risk assessment',
+      'Financial projections',
       'Priority processing',
     ],
   },

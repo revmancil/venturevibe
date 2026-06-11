@@ -53,6 +53,9 @@ export async function canUserValidate(userId: string): Promise<{ allowed: boolea
   const subscription = await getUserSubscription(userId);
   const plan = PLANS[subscription.plan as PlanKey] || PLANS.free;
 
+  // TODO: Free tier should enforce 1 lifetime validation (not monthly reset) in Prisma/query logic.
+  // TODO: Enforce per-tool access via planToolAccess from lib/toolGroups.ts in validation API routes.
+
   if (plan.validationsPerMonth === -1) {
     return { allowed: true };
   }

@@ -34,6 +34,14 @@ import FinancialProjectionsBuilder from './financial-projections-builder';
 import NameDomainChecker from './name-domain-checker';
 import FundingReadinessScore from './funding-readiness-score';
 import CompetitivePositioningMap from './competitive-positioning-map';
+import { cn } from '@/lib/utils';
+import type { PlanKey } from '@/lib/plans';
+import {
+  ENDPOINT_TOOL_SLUG,
+  getUpgradeBadgeLabel,
+  userHasToolAccess,
+  type ToolSlug,
+} from '@/lib/tool-access';
 
 interface Idea {
   id: string;
@@ -59,12 +67,20 @@ type AnalysisCard = {
   iconBg: string;
   btnColor: string;
   endpoint: string;
+  toolSlug: ToolSlug;
   successMsg: string;
   hasData: boolean;
   genLabel: string;
   regenLabel: string;
   loadingLabel: string;
 };
+
+function withToolSlug(card: Omit<AnalysisCard, 'toolSlug'>): AnalysisCard {
+  return {
+    ...card,
+    toolSlug: ENDPOINT_TOOL_SLUG[card.endpoint] as ToolSlug,
+  };
+}
 
 interface ValidationReportClientProps {
   idea: Idea;
@@ -79,6 +95,16 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
   const [llmConfigured, setLlmConfigured] = useState<boolean | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [userPlan, setUserPlan] = useState<PlanKey | null>(null);
+
+  useEffect(() => {
+    fetch('/api/subscription')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.plan) setUserPlan(data.plan as PlanKey);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch('/api/llm/health')
@@ -98,6 +124,11 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
   };
 
   const handleDownloadReport = async () => {
+    if (isToolLocked('pdf-report')) {
+      toast.message('Upgrade required', { description: 'Unlock with Business to export the full PDF report.' });
+      return;
+    }
+
     setIsDownloadingReport(true);
     try {
       const res = await fetch('/api/report/pdf', {
@@ -140,7 +171,22 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
     }
   };
 
-  const runAnalysis = async (type: AnalysisType, endpoint: string, successMsg: string) => {
+  const isToolLocked = (toolSlug: ToolSlug) =>
+    userPlan !== null && !userHasToolAccess(userPlan, toolSlug);
+
+  const runAnalysis = async (
+    type: AnalysisType,
+    endpoint: string,
+    successMsg: string,
+    toolSlug: ToolSlug
+  ) => {
+    if (isToolLocked(toolSlug)) {
+      toast.message('Upgrade required', {
+        description: getUpgradeBadgeLabel(toolSlug) ?? 'Upgrade your plan to use this tool.',
+      });
+      return;
+    }
+
     setLoadingAnalysis(type);
     try {
       // Pitch deck uses a non-streaming GET request
@@ -240,7 +286,7 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
       regenLabel: 'Re-estimate',
       loadingLabel: 'Estimating...',
     },
-  ];
+  ].map(withToolSlug);
 
   const deepAnalyses = [
     {
@@ -425,7 +471,7 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
       regenLabel: 'Regenerate',
       loadingLabel: 'Creating...',
     },
-  ];
+  ].map(withToolSlug);
 
   const investorPrepAnalyses = [
     {
@@ -484,9 +530,19 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
       regenLabel: 'Rebuild',
       loadingLabel: 'Mapping...',
     },
-  ];
+  ].map(withToolSlug);
 
-  const renderAnalysisButton = (a: AnalysisCard, size?: 'sm' | 'default') => {
+  const renderAnalysisButton = (a: AnalysisCard, locked: boolean, size?: 'sm' | 'default') => {
+    if (locked) {
+      return (
+        <Link href="/pricing" className="block w-full">
+          <Button variant="outline" className="w-full" size={size}>
+            View plans
+          </Button>
+        </Link>
+      );
+    }
+
     const isLoading = loadingAnalysis === a.type;
     if (isLoading) {
       return (
@@ -497,17 +553,59 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
     }
     if (a.hasData) {
       return (
-        <Button onClick={() => runAnalysis(a.type, a.endpoint, a.successMsg)} variant="outline" className="w-full" size={size} disabled={!!loadingAnalysis}>
+        <Button
+          onClick={() => runAnalysis(a.type, a.endpoint, a.successMsg, a.toolSlug)}
+          variant="outline"
+          className="w-full"
+          size={size}
+          disabled={!!loadingAnalysis}
+        >
           {a.regenLabel}
         </Button>
       );
     }
     return (
-      <Button onClick={() => runAnalysis(a.type, a.endpoint, a.successMsg)} className={`w-full text-white ${a.btnColor}`} size={size} disabled={!!loadingAnalysis}>
+      <Button
+        onClick={() => runAnalysis(a.type, a.endpoint, a.successMsg, a.toolSlug)}
+        className={`w-full text-white ${a.btnColor}`}
+        size={size}
+        disabled={!!loadingAnalysis}
+      >
         {a.genLabel}
       </Button>
     );
   };
+
+  const renderAnalysisCard = (a: AnalysisCard, size: 'sm' | 'default' = 'default') => {
+    const locked = isToolLocked(a.toolSlug);
+    const upgradeLabel = getUpgradeBadgeLabel(a.toolSlug);
+    const padding = size === 'sm' ? 'p-4' : 'p-6';
+    const titleClass = size === 'sm' ? 'text-sm' : 'text-lg';
+
+    return (
+      <Card
+        key={a.type}
+        className={cn('relative border border-border/50', padding, locked && 'opacity-40')}
+      >
+        {locked && upgradeLabel && (
+          <Badge variant="secondary" className="absolute right-3 top-3 text-xs">
+            {upgradeLabel}
+          </Badge>
+        )}
+        <div className={cn('flex items-center gap-3 mb-4', size === 'sm' && 'mb-2 gap-2')}>
+          <div className={cn('rounded-lg', a.iconBg, size === 'sm' ? 'p-2' : 'p-3')}>{a.icon}</div>
+          <h3 className={cn('font-semibold', titleClass)}>{a.label}</h3>
+        </div>
+        <p className={cn('text-muted-foreground mb-6', size === 'sm' ? 'mb-4 text-xs' : 'text-sm')}>
+          {a.desc}
+        </p>
+        {renderAnalysisButton(a, locked, size)}
+      </Card>
+    );
+  };
+
+  const pdfLocked = isToolLocked('pdf-report');
+  const coachLocked = isToolLocked('ai-idea-coach');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -518,14 +616,21 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
             Back to ideas
           </Link>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleDownloadReport} disabled={isDownloadingReport}>
-              {isDownloadingReport ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4 mr-2" />
+            <div className={cn('relative', pdfLocked && 'opacity-40')}>
+              {pdfLocked && (
+                <Badge variant="secondary" className="absolute -right-1 -top-2 z-10 text-[10px]">
+                  Unlock with Business
+                </Badge>
               )}
-              {isDownloadingReport ? 'Generating PDF…' : 'Download Report'}
-            </Button>
+              <Button variant="outline" size="sm" onClick={handleDownloadReport} disabled={isDownloadingReport}>
+                {isDownloadingReport ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                {isDownloadingReport ? 'Generating PDF…' : 'Download Report'}
+              </Button>
+            </div>
             <Button variant="outline" size="sm" onClick={refreshIdea} disabled={isRefreshing}>
               <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
               Refresh
@@ -566,16 +671,7 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
 
         {/* Core analyses: surveys, competitors, market */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {coreAnalyses.map((a) => (
-            <Card key={a.type} className="p-6 border border-border/50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`p-3 ${a.iconBg} rounded-lg`}>{a.icon}</div>
-                <h3 className="font-semibold text-lg">{a.label}</h3>
-              </div>
-              <p className="text-sm text-muted-foreground mb-6">{a.desc}</p>
-              {renderAnalysisButton(a)}
-            </Card>
-          ))}
+          {coreAnalyses.map((a) => renderAnalysisCard(a))}
         </div>
 
         {/* Investor prep */}
@@ -583,16 +679,7 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
           <h2 className="font-display text-2xl font-bold mb-1">Investor Prep</h2>
           <p className="text-muted-foreground text-sm mb-6">Tools founders use before investor meetings</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {investorPrepAnalyses.map((a) => (
-              <Card key={a.type} className="p-4 border border-border/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`p-2 ${a.iconBg} rounded-lg`}>{a.icon}</div>
-                  <h4 className="font-semibold text-sm">{a.label}</h4>
-                </div>
-                <p className="text-xs text-muted-foreground mb-4">{a.desc}</p>
-                {renderAnalysisButton(a, 'sm')}
-              </Card>
-            ))}
+            {investorPrepAnalyses.map((a) => renderAnalysisCard(a, 'sm'))}
           </div>
         </div>
 
@@ -601,16 +688,7 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
           <h2 className="font-display text-2xl font-bold mb-1">Deep Analysis</h2>
           <p className="text-muted-foreground text-sm mb-6">Go deeper with advanced AI-powered business analyses</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {deepAnalyses.map((a) => (
-              <Card key={a.type} className="p-4 border border-border/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`p-2 ${a.iconBg} rounded-lg`}>{a.icon}</div>
-                  <h4 className="font-semibold text-sm">{a.label}</h4>
-                </div>
-                <p className="text-xs text-muted-foreground mb-4">{a.desc}</p>
-                {renderAnalysisButton(a, 'sm')}
-              </Card>
-            ))}
+            {deepAnalyses.map((a) => renderAnalysisCard(a, 'sm'))}
           </div>
         </div>
 
@@ -676,8 +754,26 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
           </div>
         )}
 
-        {/* AI Idea Coach - always visible */}
-        <IdeaCoachChat ideaId={idea.id} />
+        {/* AI Idea Coach - always visible; locked UI when not on Business */}
+        <div className="relative mt-8">
+          {coachLocked && (
+            <Badge variant="secondary" className="absolute right-0 top-0 z-10 text-xs">
+              Unlock with Business
+            </Badge>
+          )}
+          <div className={cn(coachLocked && 'pointer-events-none opacity-40')}>
+            <IdeaCoachChat ideaId={idea.id} />
+          </div>
+          {coachLocked && (
+            <div className="mt-3 text-center">
+              <Link href="/pricing">
+                <Button size="sm" variant="outline">
+                  View plans
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

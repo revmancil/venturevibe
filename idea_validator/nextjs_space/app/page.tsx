@@ -217,7 +217,7 @@ export default function HomePage() {
         {/* CTA */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 my-12 bg-gradient-to-br from-violet-50 to-emerald-50 rounded-2xl text-center">
           <h2 className="font-display text-4xl font-bold mb-6">Ready to feel the vibe?</h2>
-          <p className="text-lg text-muted-foreground mb-8">Start free with 2 validations per month, or upgrade for unlimited power.</p>
+          <p className="text-lg text-muted-foreground mb-8">Start free with 1 lifetime validation, or upgrade for more power.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/signup">
               <Button size="lg" className="bg-gradient-to-r from-violet-500 to-emerald-500 hover:from-violet-600 hover:to-emerald-600">Start free</Button>
