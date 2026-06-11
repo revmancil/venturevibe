@@ -131,13 +131,13 @@ export default function HomePage() {
               {AI_TOOL_COUNT_LABEL} · Results in minutes
             </div>
             <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-8 leading-[1.2] sm:leading-[1.18] lg:leading-[1.15]">
-              Feel the pulse of your
+              Know if your idea is worth building —
               <span className="block pb-1.5 text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-600 to-emerald-500">
-                next big idea
+                in 48 hours.
               </span>
             </h1>
             <p className="mt-3 text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
-              Every venture starts with a vibe. VentureVibe turns that spark into hard data — market sizing, competitor intel, financial projections, funding readiness, and an investor-ready pitch deck, all powered by AI.
+              VentureVibe runs {AI_TOOL_COUNT} AI-powered validation checks — market sizing, competitor intel, financial projections, and an investor-ready pitch deck — so you don&apos;t waste months on the wrong idea.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/auth/signup">
