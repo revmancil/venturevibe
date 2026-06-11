@@ -2,7 +2,14 @@
 
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Target } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { Link2, Share2, Target } from 'lucide-react';
+import {
+  buildValidationScoreTweet,
+  getShareableResultsUrl,
+  twitterIntentUrl,
+} from '@/lib/share-validation-score';
 
 interface ScoreData {
   score?: number;
@@ -14,8 +21,29 @@ interface ScoreData {
   verdict?: string;
 }
 
-export default function ValidationScore({ data }: { data: ScoreData }) {
+type ValidationScoreProps = {
+  data: ScoreData;
+  ideaId: string;
+  ideaTitle: string;
+};
+
+export default function ValidationScore({ data, ideaId, ideaTitle }: ValidationScoreProps) {
   const score = data?.score ?? 0;
+
+  const handleShareScore = () => {
+    const url = twitterIntentUrl(buildValidationScoreTweet(score, ideaTitle));
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleCopyLink = async () => {
+    const url = getShareableResultsUrl(ideaId);
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard');
+    } catch {
+      toast.error('Could not copy link');
+    }
+  };
   const gradeColor = score >= 80 ? 'text-emerald-600 bg-emerald-100' : score >= 60 ? 'text-blue-600 bg-blue-100' : score >= 40 ? 'text-amber-600 bg-amber-100' : 'text-red-600 bg-red-100';
   const barColor = score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-blue-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500';
 
@@ -41,6 +69,17 @@ export default function ValidationScore({ data }: { data: ScoreData }) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+        <Button type="button" variant="outline" size="sm" onClick={handleShareScore}>
+          <Share2 className="mr-2 h-4 w-4" />
+          Share your score
+        </Button>
+        <Button type="button" variant="outline" size="sm" onClick={handleCopyLink}>
+          <Link2 className="mr-2 h-4 w-4" />
+          Copy link
+        </Button>
       </div>
 
       {data?.dimensions && data.dimensions.length > 0 && (

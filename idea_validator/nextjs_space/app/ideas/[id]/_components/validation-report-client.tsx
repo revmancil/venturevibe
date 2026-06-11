@@ -647,7 +647,13 @@ export default function ValidationReportClient({ idea: initialIdea }: Validation
         {/* Results */}
         {report && (
           <div className="space-y-0">
-            {report.validationScoreData && <ValidationScore data={report.validationScoreData} />}
+            {report.validationScoreData && (
+              <ValidationScore
+                data={report.validationScoreData}
+                ideaId={idea.id}
+                ideaTitle={idea.title}
+              />
+            )}
             {report.surveyData && <SurveyResults data={report.surveyData} />}
             {report.competitorData && <CompetitorAnalysis data={report.competitorData} />}
             {report.marketData && <MarketSizing data={report.marketData} />}

@@ -11,6 +11,7 @@ import { VentureVibeLogo } from '@/components/brand/venturevibe-logo';
 import { toast } from 'sonner';
 import { PLANS } from '@/lib/plans';
 import { AI_TOOL_COUNT_LABEL } from '@/lib/marketing';
+import { FREE_TRIAL_TOOLS, signupTrialUrl } from '@/lib/pricing-trials';
 
 export default function PricingPage() {
   const { data: session, status } = useSession();
@@ -172,6 +173,21 @@ export default function PricingPage() {
                       </li>
                     );
                   })}
+                  {key === 'free' &&
+                    FREE_TRIAL_TOOLS.map((tool) => (
+                      <li key={tool.id} className="text-sm">
+                        <div className="flex items-start gap-2">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                          <span>{tool.label}</span>
+                        </div>
+                        <Link
+                          href={signupTrialUrl(tool.id)}
+                          className="ml-6 mt-0.5 inline-block text-xs font-medium text-primary hover:underline"
+                        >
+                          Try once free →
+                        </Link>
+                      </li>
+                    ))}
                 </ul>
 
                 {key === 'free' ? (

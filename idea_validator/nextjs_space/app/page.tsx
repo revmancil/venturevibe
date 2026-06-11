@@ -5,8 +5,10 @@ import { Card } from "@/components/ui/card";
 import { LandingScreenshot } from "@/components/features/landing-screenshot";
 import { Zap, ArrowRight } from "lucide-react";
 import { VentureVibeLogo } from "@/components/brand/venturevibe-logo";
+import { LandingFaq } from "@/components/marketing/landing-faq";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { AI_TOOL_COUNT, AI_TOOL_COUNT_LABEL, AI_TOOLS_SUMMARY } from "@/lib/marketing";
+import { getLandingFaqJsonLd } from "@/lib/landing-faq";
 
 export const metadata: Metadata = {
   title: "Feel the Pulse of Your Next Big Idea",
@@ -15,44 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "How does VentureVibe validate business ideas?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: `VentureVibe uses ${AI_TOOL_COUNT} AI-powered tools — including ${AI_TOOLS_SUMMARY} — to deliver a comprehensive validation report in 48 hours.`,
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is there a free plan?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. The Free plan includes 2 idea validations per month with core features. Pro ($29/mo) unlocks 15 validations and advanced tools. Business ($79/mo) offers unlimited validations.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How long does a validation take?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Most validation reports are generated within minutes, with comprehensive AI analysis ready for review in under 48 hours.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Can I export my validation report?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. You can export a full PDF report with all analyses and a separate investor-ready pitch deck PDF.",
-      },
-    },
-  ],
-};
+const faqJsonLd = getLandingFaqJsonLd();
 
 /** Slug = filename under public/landing/screenshots/ (e.g. micro-surveys.png). Omit file until you add it — placeholder shows. */
 const coreFeatures = [
@@ -246,6 +211,8 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        <LandingFaq />
 
         {/* CTA */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 my-12 bg-gradient-to-br from-violet-50 to-emerald-50 rounded-2xl text-center">
