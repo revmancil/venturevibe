@@ -13,6 +13,7 @@ import { PLANS, type PlanKey } from '@/lib/plans';
 import { AI_TOOL_COUNT_LABEL } from '@/lib/marketing';
 import { FREE_TRIAL_TOOLS, signupTrialUrl } from '@/lib/pricing-trials';
 import { PlanToolSections } from '@/components/pricing/plan-tool-sections';
+import { FREE_TIER_PRO_UPSELL } from '@/lib/free-tier-copy';
 
 export default function PricingPage() {
   const { data: session, status } = useSession();
@@ -156,6 +157,9 @@ export default function PricingPage() {
                       ? 'For serious entrepreneurs'
                       : 'For teams & agencies'}
                   </p>
+                  {key === 'free' && (
+                    <p className="mt-2 text-xs text-muted-foreground">{FREE_TIER_PRO_UPSELL}</p>
+                  )}
                   <p className="mt-3 text-sm font-medium text-foreground">{plan.features[0]}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     One validation = one idea, full tool suite, saved permanently.

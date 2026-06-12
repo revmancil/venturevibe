@@ -2,20 +2,28 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Zap, ArrowRight } from "lucide-react";
+import { Zap } from "lucide-react";
 import { VentureVibeLogo } from "@/components/brand/venturevibe-logo";
 import { LandingFaq } from "@/components/marketing/landing-faq";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { HowItWorksSection } from "@/components/marketing/how-it-works-section";
 import { WhatsIncludedSection } from "@/components/marketing/whats-included-section";
-import { AI_TOOL_COUNT, AI_TOOL_COUNT_LABEL, AI_TOOLS_SUMMARY } from "@/lib/marketing";
+import { AI_TOOL_COUNT, AI_TOOL_COUNT_LABEL } from "@/lib/marketing";
 import { getLandingFaqJsonLd } from "@/lib/landing-faq";
+import { SITE_META_DESCRIPTION } from "@/lib/site-meta";
+import { FREE_VALIDATION_COPY } from "@/lib/free-tier-copy";
+import { TestimonialsSection } from "@/components/marketing/testimonials-section";
 
 export const metadata: Metadata = {
   title: "Feel the Pulse of Your Next Big Idea",
-  description:
-    `VentureVibe helps entrepreneurs validate startup ideas in 48 hours using ${AI_TOOL_COUNT} AI-powered tools: ${AI_TOOLS_SUMMARY}. Start free.`,
+  description: SITE_META_DESCRIPTION,
   alternates: { canonical: "/" },
+  openGraph: {
+    description: SITE_META_DESCRIPTION,
+  },
+  twitter: {
+    description: SITE_META_DESCRIPTION,
+  },
 };
 
 const faqJsonLd = getLandingFaqJsonLd();
@@ -24,28 +32,50 @@ const founderPersonas = [
   {
     emoji: "🌙",
     title: "The Side Hustler",
-    desc: "Testing ideas before quitting your day job",
+    outcome: "Test 2 ideas a month before risking your savings.",
+    useCase: "Validate while keeping your day job.",
   },
   {
     emoji: "🚀",
     title: "The Serial Founder",
-    desc: "Validating fast before committing a team",
+    outcome: "Cut your pre-launch research from 3 weeks to 48 hours.",
+    useCase: "Run fast validation before committing a team.",
   },
   {
     emoji: "🏢",
     title: "The Agency",
-    desc: "Running validation for multiple clients at once",
+    outcome: "Deliver validation reports as a client deliverable.",
+    useCase: "White-label-ready PDF reports included.",
   },
 ];
 
-function PersonaCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
+function PersonaCard({
+  emoji,
+  title,
+  outcome,
+  useCase,
+}: {
+  emoji: string;
+  title: string;
+  outcome: string;
+  useCase: string;
+}) {
   return (
-    <Card className="border border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+    <Card className="flex h-full flex-col border border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <div className="mb-4 text-3xl" aria-hidden>
         {emoji}
       </div>
-      <h3 className="mb-2 text-lg font-bold">{title}</h3>
-      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
+      <h3 className="mb-3 text-lg font-bold">{title}</h3>
+      <p className="mb-3 text-sm font-medium leading-relaxed text-foreground">&ldquo;{outcome}&rdquo;</p>
+      <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
+        <span className="font-medium text-foreground/80">Use case:</span> &ldquo;{useCase}&rdquo;
+      </p>
+      <Link
+        href="/auth/signup"
+        className="mt-auto text-sm font-medium text-primary hover:underline"
+      >
+        See how it works →
+      </Link>
     </Card>
   );
 }
@@ -94,8 +124,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/auth/signup">
                 <Button size="lg" className="text-base px-8 py-6 bg-gradient-to-r from-violet-500 to-emerald-500 hover:from-violet-600 hover:to-emerald-600 shadow-lg shadow-violet-500/25">
-                  Start validating — it&apos;s free
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  Validate your first idea free →
                 </Button>
               </Link>
               <Link href="/pricing">
@@ -107,6 +136,8 @@ export default function HomePage() {
         </section>
 
         <HowItWorksSection />
+
+        <TestimonialsSection />
 
         <WhatsIncludedSection />
 
@@ -127,7 +158,9 @@ export default function HomePage() {
         {/* CTA */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 my-12 bg-gradient-to-br from-violet-50 to-emerald-50 rounded-2xl text-center">
           <h2 className="font-display text-4xl font-bold mb-6">Ready to feel the vibe?</h2>
-          <p className="text-lg text-muted-foreground mb-8">Start free with 1 lifetime validation, or upgrade for more power.</p>
+          <p className="text-lg text-muted-foreground mb-8">
+            Start with {FREE_VALIDATION_COPY} Or upgrade for more power.
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/signup">
               <Button size="lg" className="bg-gradient-to-r from-violet-500 to-emerald-500 hover:from-violet-600 hover:to-emerald-600">Start free</Button>

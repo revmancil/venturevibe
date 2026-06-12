@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
 import { getSiteUrl } from "@/lib/site-url";
+import { SITE_META_DESCRIPTION } from "@/lib/site-meta";
 import { AI_TOOL_COUNT, AI_TOOLS_SUMMARY } from "@/lib/marketing";
 
 export const dynamic = "force-dynamic";
@@ -34,8 +35,7 @@ export const metadata: Metadata = {
     default: "VentureVibe — Feel the Pulse of Your Next Big Idea",
     template: "%s | VentureVibe",
   },
-  description:
-    `Validate your startup or business idea in 48 hours with ${AI_TOOL_COUNT} AI-powered tools: ${AI_TOOLS_SUMMARY}.`,
+  description: SITE_META_DESCRIPTION,
   keywords: [
     "business idea validation",
     "startup validation",
@@ -73,8 +73,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "VentureVibe",
     title: "VentureVibe — Feel the Pulse of Your Next Big Idea",
-    description:
-      `${AI_TOOL_COUNT} AI-powered tools to validate startup ideas: ${AI_TOOLS_SUMMARY}.`,
+    description: SITE_META_DESCRIPTION,
     images: [
       {
         url: "/og-image.png",
@@ -88,8 +87,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "VentureVibe — Feel the Pulse of Your Next Big Idea",
-    description:
-      `${AI_TOOL_COUNT} AI-powered tools to validate startup ideas fast: market sizing, financial projections, funding readiness, pitch deck, and more.`,
+    description: SITE_META_DESCRIPTION,
     images: ["/og-image.png"],
   },
   robots: {

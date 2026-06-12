@@ -2,9 +2,9 @@ export const PLANS = {
   free: {
     name: 'Free',
     price: 0,
-    validationsPerMonth: 1, // 1 lifetime validation, not recurring
+    validationsPerMonth: 1, // 1 free validation, not recurring
     features: [
-      '1 free idea validation (lifetime)',
+      '1 free validation — no credit card required.',
       'Micro-survey generation',
       'Basic competitor analysis',
       'Basic market sizing',
