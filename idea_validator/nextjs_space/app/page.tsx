@@ -2,11 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { LandingScreenshot } from "@/components/features/landing-screenshot";
 import { Zap, ArrowRight } from "lucide-react";
 import { VentureVibeLogo } from "@/components/brand/venturevibe-logo";
 import { LandingFaq } from "@/components/marketing/landing-faq";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
+import { HowItWorksSection } from "@/components/marketing/how-it-works-section";
+import { WhatsIncludedSection } from "@/components/marketing/whats-included-section";
 import { AI_TOOL_COUNT, AI_TOOL_COUNT_LABEL, AI_TOOLS_SUMMARY } from "@/lib/marketing";
 import { getLandingFaqJsonLd } from "@/lib/landing-faq";
 
@@ -18,31 +19,6 @@ export const metadata: Metadata = {
 };
 
 const faqJsonLd = getLandingFaqJsonLd();
-
-/** Slug = filename under public/landing/screenshots/ (e.g. micro-surveys.png). Omit file until you add it — placeholder shows. */
-const coreFeatures = [
-  { slug: "micro-surveys", color: "blue", title: "Micro-Surveys", desc: "AI-generated survey questions tailored to validate your idea" },
-  { slug: "competitor-analysis", color: "purple", title: "Competitor Analysis", desc: "Automatic research of key competitors and market positioning" },
-  { slug: "market-sizing", color: "emerald", title: "Market Sizing", desc: "Estimated TAM, SAM, SOM and growth projections" },
-];
-
-const deepFeatures = [
-  { slug: "validation-score", color: "rose", title: "Validation Score", desc: "0-100 score with detailed breakdown across 5 dimensions" },
-  { slug: "swot-analysis", color: "indigo", title: "SWOT Analysis", desc: "Strengths, weaknesses, opportunities, and threats" },
-  { slug: "pricing-strategy", color: "emerald", title: "Pricing Strategy", desc: "Recommended pricing models, tiers, and revenue projections" },
-  { slug: "gtm-plan", color: "orange", title: "Go-To-Market Plan", desc: "Channels, phases, and tactics to launch effectively" },
-  { slug: "mvp-features", color: "blue", title: "MVP Features", desc: "Prioritized feature list to ship your minimum viable product" },
-  { slug: "customer-personas", color: "purple", title: "Customer Personas", desc: "Detailed profiles of your ideal customers" },
-  { slug: "business-canvas", color: "cyan", title: "Business Model Canvas", desc: "Complete 9-block business model breakdown" },
-  { slug: "risk-assessment", color: "amber", title: "Risk Assessment", desc: "Identify and mitigate key risks before they bite" },
-];
-
-const investorPrepFeatures = [
-  { slug: "financial-projections", color: "indigo", title: "Financial Projections", desc: "3–5 year revenue, burn rate, runway & break-even with editable assumptions" },
-  { slug: "name-checker", color: "violet", title: "Name & Domain Checker", desc: "Brandable startup names with live domain availability screening" },
-  { slug: "funding-readiness", color: "amber", title: "Funding Readiness Score", desc: "Investor-ready assessment across traction, market, team & defensibility" },
-  { slug: "positioning-map", color: "cyan", title: "Competitive Positioning Map", desc: "Visual 2×2 map placing your startup vs competitors on key dimensions" },
-];
 
 const founderPersonas = [
   {
@@ -61,26 +37,6 @@ const founderPersonas = [
     desc: "Running validation for multiple clients at once",
   },
 ];
-
-const pitchFeatures = [
-  { slug: "idea-refinement", color: "pink", title: "Idea Refinement", desc: "AI suggestions to sharpen and improve your idea" },
-  { slug: "elevator-pitches", color: "violet", title: "Elevator Pitches", desc: "Multiple pitch versions for different audiences" },
-  { slug: "pitch-deck", color: "indigo", title: "Pitch Deck", desc: "10-slide investor pitch deck with PDF export" },
-  { slug: "idea-coach", color: "emerald", title: "AI Idea Coach", desc: "Chat with an AI mentor that knows your idea inside-out" },
-  { slug: "pdf-report", color: "blue", title: "Full PDF Report", desc: "Download a comprehensive PDF of all your validation data" },
-  { slug: "revenue-simulator", color: "emerald", title: "Revenue Simulator", desc: "24-month projections with sliders, preset scenario compare, and save up to 3 custom scenarios" },
-  { slug: "market-signals", color: "rose", title: "Live Market Signals", desc: "Real-time trends, search interest, funding activity with history timeline" },
-];
-
-function FeatureCard({ slug, color, title, desc }: { slug: string; color: string; title: string; desc: string }) {
-  return (
-    <Card className="overflow-hidden border border-border/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-      <LandingScreenshot slug={slug} title={title} color={color} />
-      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
-    </Card>
-  );
-}
 
 function PersonaCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
   return (
@@ -150,55 +106,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Core Validation */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4">Core Validation</div>
-            <h2 className="font-display text-4xl font-bold mb-3">Start with the essentials</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">The fundamentals every founder needs before going further.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {coreFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
-          </div>
-        </section>
+        <HowItWorksSection />
 
-        {/* Deep Analysis */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider mb-4">Deep Analysis</div>
-            <h2 className="font-display text-4xl font-bold mb-3">Go deeper than the surface</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Eight deep-dive analyses that reveal the full picture of your opportunity.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {deepFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
-          </div>
-        </section>
-
-        {/* Investor Prep */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wider mb-4">Investor Prep</div>
-            <h2 className="font-display text-4xl font-bold mb-3">Walk into meetings prepared</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Four tools founders reach for before investor conversations — financials, naming, readiness, and competitive position.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {investorPrepFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
-          </div>
-        </section>
-
-        {/* Pitch & Refine */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-4">Pitch &amp; Refine</div>
-            <h2 className="font-display text-4xl font-bold mb-3">From idea to investor-ready</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Tools to polish your idea, talk about it confidently, and pitch it like a pro.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {pitchFeatures.map((f) => <FeatureCard key={f.title} {...f} />)}
-          </div>
-        </section>
+        <WhatsIncludedSection />
 
         {/* Founder personas */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
